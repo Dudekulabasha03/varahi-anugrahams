@@ -21,7 +21,7 @@ const FILM_SCENES: FilmScene[] = [
     id: "arrival",
     tag: "01 · Arrival",
     label: "Descent & Enclave",
-    duration: 7.0, // Zooming into residential complex - 7 seconds
+    duration: 6.0, // Zooming into residential complex - 6.0s (skips last 1 sec)
     startTime: 0,
     src: "/media/videos/hero-arrival.mp4",
     poster: "/media/images/residential-avenue.jpg",
@@ -65,7 +65,7 @@ const FILM_SCENES: FilmScene[] = [
     id: "interiors",
     tag: "05 · Interiors",
     label: "Living Pavilion",
-    duration: 3.8, // Inside interiors video - 3.8 seconds
+    duration: 5.8, // Inside interiors video - 5.8s (added 2 sec more)
     startTime: 0,
     src: "/media/videos/interior-fpv.mp4",
     poster: "/media/images/villa-facade.jpg",
@@ -88,12 +88,14 @@ const FILM_SCENES: FilmScene[] = [
 export const ContinuousCinematicHero: React.FC = () => {
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [sceneProgress, setSceneProgress] = useState(0); // 0 to 1
 
   // Dual video player references for zero-black-flash seamless cross-fading
   const videoRefA = useRef<HTMLVideoElement>(null);
   const videoRefB = useRef<HTMLVideoElement>(null);
   const [activePlayer, setActivePlayer] = useState<"A" | "B">("A");
+
+  // Direct DOM references for progress bars to prevent 60fps React re-renders
+  const barRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const currentScene = FILM_SCENES[currentSceneIdx];
 
@@ -105,6 +107,13 @@ export const ContinuousCinematicHero: React.FC = () => {
       const nextVideo = nextPlayer === "A" ? videoRefA.current : videoRefB.current;
       const prevVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
 
+      // Reset inactive bars
+      barRefs.current.forEach((bar, idx) => {
+        if (bar && idx !== nextIdx) {
+          bar.style.width = "0%";
+        }
+      });
+
       if (nextVideo) {
         nextVideo.src = targetScene.src;
         nextVideo.currentTime = targetScene.startTime || 0;
@@ -113,7 +122,6 @@ export const ContinuousCinematicHero: React.FC = () => {
           .then(() => {
             setActivePlayer(nextPlayer);
             setCurrentSceneIdx(nextIdx);
-            setSceneProgress(0);
             // After fade transition, pause previous
             setTimeout(() => {
               if (prevVideo) prevVideo.pause();
@@ -130,7 +138,7 @@ export const ContinuousCinematicHero: React.FC = () => {
     [activePlayer]
   );
 
-  // Automatic timed progression across scenes
+  // Automatic timed progression across scenes (zero React component re-renders per frame)
   useEffect(() => {
     let animationFrameId: number;
 
@@ -146,7 +154,12 @@ export const ContinuousCinematicHero: React.FC = () => {
         const elapsed = activeVideo.currentTime - startOffset;
         const dur = currentScene.duration;
         const p = Math.min(1, Math.max(0, elapsed / dur));
-        setSceneProgress(p);
+
+        // Direct hardware-accelerated style update
+        const activeBar = barRefs.current[currentSceneIdx];
+        if (activeBar) {
+          activeBar.style.width = `${p * 100}%`;
+        }
 
         if (elapsed >= dur) {
           // Advance to next scene
@@ -246,10 +259,14 @@ export const ContinuousCinematicHero: React.FC = () => {
                 key={scene.id}
                 role="button"
                 tabIndex={0}
-                onMouseEnter={() => transitionToScene(idx)}
-                onClick={() => transitionToScene(idx)}
+                onMouseEnter={() => {
+                  if (currentSceneIdx !== idx) transitionToScene(idx);
+                }}
+                onClick={() => {
+                  if (currentSceneIdx !== idx) transitionToScene(idx);
+                }}
                 aria-label={`Jump to ${scene.label}`}
-                className={`group relative rounded-[12px] p-2.5 sm:p-3 cursor-pointer backdrop-blur-2xl transition-all duration-300 border text-left shadow-lg ${
+                className={`group relative rounded-[12px] p-2.5 sm:p-3 cursor-pointer backdrop-blur-xl transition-all duration-200 border text-left shadow-lg will-change-transform ${
                   isActive
                     ? "bg-stone-950/85 border-gold shadow-[0_4px_20px_0_rgba(169,139,79,0.25)]"
                     : "bg-stone-950/40 border-white/[0.12] hover:border-gold/60 hover:bg-stone-950/65"
@@ -266,13 +283,14 @@ export const ContinuousCinematicHero: React.FC = () => {
                   {scene.label}
                 </div>
 
-                {/* Progress bar inside active card */}
+                {/* Hardware-accelerated progress bar inside card */}
                 <div className="w-full h-[2px] bg-white/20 mt-1.5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gold transition-all duration-75"
-                    style={{
-                      width: isActive ? `${sceneProgress * 100}%` : "0%",
+                    ref={(el) => {
+                      barRefs.current[idx] = el;
                     }}
+                    className="h-full bg-gold transition-all duration-75"
+                    style={{ width: "0%" }}
                   />
                 </div>
               </div>

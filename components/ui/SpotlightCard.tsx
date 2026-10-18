@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 
 interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -17,30 +17,35 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
   ...props
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [opacity, setOpacity] = useState(0);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    setPosition({ x, y });
-    setOpacity(1);
+
+    if (spotlightRef.current) {
+      spotlightRef.current.style.opacity = "1";
+      spotlightRef.current.style.background = `radial-gradient(600px circle at ${x}px ${y}px, ${spotlightColor}, transparent 40%)`;
+    }
 
     if (enableTilt) {
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
       const tiltX = ((y - centerY) / centerY) * -4;
       const tiltY = ((x - centerX) / centerX) * 4;
-      setTilt({ x: tiltX, y: tiltY });
+      cardRef.current.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
     }
   };
 
   const handleMouseLeave = () => {
-    setOpacity(0);
-    setTilt({ x: 0, y: 0 });
+    if (spotlightRef.current) {
+      spotlightRef.current.style.opacity = "0";
+    }
+    if (enableTilt && cardRef.current) {
+      cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+    }
   };
 
   return (
@@ -48,24 +53,14 @@ export const SpotlightCard: React.FC<SpotlightCardProps> = ({
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={`relative rounded-[20px] overflow-hidden border border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:border-gold/40 ${className}`}
-      style={
-        enableTilt
-          ? {
-              transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
-              transformStyle: "preserve-3d",
-            }
-          : undefined
-      }
+      className={`relative rounded-[20px] overflow-hidden border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl transition-transform duration-150 ease-out shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:border-gold/40 will-change-transform ${className}`}
+      style={enableTilt ? { transformStyle: "preserve-3d" } : undefined}
       {...props}
     >
-      {/* 21st.dev Mouse Spotlight Layer */}
+      {/* 21st.dev Mouse Spotlight Layer (hardware accelerated via direct DOM style) */}
       <div
-        className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-[20px] z-10"
-        style={{
-          opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
-        }}
+        ref={spotlightRef}
+        className="pointer-events-none absolute -inset-px transition-opacity duration-300 rounded-[20px] z-10 opacity-0"
       />
 
       {/* Glass Top Edge Reflection Highlight */}

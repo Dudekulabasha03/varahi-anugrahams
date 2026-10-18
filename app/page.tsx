@@ -15,11 +15,11 @@ export default function HomePage() {
       {/* 1. Interactive Magnetic Cursor: "PLAY" over video stages, "ZOOM" over photos */}
       <LuxuryCursor />
 
-      {/* Ambient Lighting Orbs (ReactBits style) */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#cda260]/10 via-[#cda260]/5 to-transparent blur-[160px]" />
-        <div className="absolute top-[40%] right-[-15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-bl from-[#9c783e]/10 via-[#664b22]/5 to-transparent blur-[180px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-tr from-[#cda260]/8 via-[#856128]/5 to-transparent blur-[160px]" />
+      {/* Ambient Lighting Orbs (ReactBits style - GPU accelerated) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transform-gpu will-change-transform">
+        <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#cda260]/10 via-[#cda260]/5 to-transparent blur-[120px] transform-gpu" />
+        <div className="absolute top-[40%] right-[-15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-bl from-[#9c783e]/10 via-[#664b22]/5 to-transparent blur-[130px] transform-gpu" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-tr from-[#cda260]/8 via-[#856128]/5 to-transparent blur-[120px] transform-gpu" />
       </div>
 
       {/* 2. Fixed Luxury Navigation Bar */}
