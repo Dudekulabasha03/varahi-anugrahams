@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { UniversalLightbox } from "./ui/UniversalLightbox";
-import { MessageCircle, Play, Film, Image as ImageIcon, ChevronDown, ChevronUp, Layers } from "lucide-react";
+import { SpotlightCard } from "./ui/SpotlightCard";
+import { MessageCircle, Play, Film, Image as ImageIcon, ChevronDown, ChevronUp, Layers, Phone, Mail, MapPin, Calendar, ArrowUpRight, Sparkles } from "lucide-react";
 
 export interface GalleryItem {
   id: string;
@@ -216,10 +217,14 @@ export const ReferenceStyleBottomSections: React.FC = () => {
   return (
     <>
       {/* 1. Gallery Section */}
-      <section id="gallery" className="px-[5vw] py-[12vh] bg-bg text-ink">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+      {/* 1. Gallery Section */}
+      <section id="gallery" className="px-[5vw] py-[12vh] bg-transparent text-ink relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <div className="eyebrow">Gallery</div>
+            <div className="eyebrow flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-gold" />
+              <span>Project Visuals</span>
+            </div>
             <h2
               className="font-serif font-medium leading-[1.05]"
               style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
@@ -228,15 +233,15 @@ export const ReferenceStyleBottomSections: React.FC = () => {
             </h2>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
+          {/* Category Filter Pills (21st.dev Glassy Style) */}
+          <div className="flex items-center gap-2.5 self-start md:self-auto flex-wrap">
             <button
               type="button"
               onClick={() => setActiveFilter("all")}
-              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all border ${
+              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all duration-300 border ${
                 activeFilter === "all"
-                  ? "bg-gold text-white border-gold shadow-sm"
-                  : "bg-card text-ink border-line hover:border-gold"
+                  ? "bg-gold text-stone-950 border-gold shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold"
+                  : "bg-white/[0.04] text-stone-300 border-white/[0.1] hover:border-gold/50 backdrop-blur-md hover:text-white"
               }`}
             >
               All ({allGalleryItems.length})
@@ -244,10 +249,10 @@ export const ReferenceStyleBottomSections: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveFilter("photos")}
-              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all border flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all duration-300 border flex items-center gap-1.5 ${
                 activeFilter === "photos"
-                  ? "bg-gold text-white border-gold shadow-sm"
-                  : "bg-card text-ink border-line hover:border-gold"
+                  ? "bg-gold text-stone-950 border-gold shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold"
+                  : "bg-white/[0.04] text-stone-300 border-white/[0.1] hover:border-gold/50 backdrop-blur-md hover:text-white"
               }`}
             >
               <ImageIcon className="w-3.5 h-3.5" />
@@ -256,10 +261,10 @@ export const ReferenceStyleBottomSections: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveFilter("videos")}
-              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all border flex items-center gap-1.5 ${
+              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all duration-300 border flex items-center gap-1.5 ${
                 activeFilter === "videos"
-                  ? "bg-gold text-white border-gold shadow-sm"
-                  : "bg-card text-ink border-line hover:border-gold"
+                  ? "bg-gold text-stone-950 border-gold shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold"
+                  : "bg-white/[0.04] text-stone-300 border-white/[0.1] hover:border-gold/50 backdrop-blur-md hover:text-white"
               }`}
             >
               <Film className="w-3.5 h-3.5" />
@@ -268,11 +273,11 @@ export const ReferenceStyleBottomSections: React.FC = () => {
           </div>
         </div>
 
-        {/* Masonry Columns matching reference .gal */}
+        {/* Masonry Columns matching reference .gal with Glassy Cards */}
         <div
-          className="gap-[16px] transition-all duration-500"
+          className="gap-[20px] transition-all duration-500"
           style={{
-            columns: "3 240px",
+            columns: "3 260px",
           }}
         >
           {visibleItems.map((item, idx) => {
@@ -284,9 +289,12 @@ export const ReferenceStyleBottomSections: React.FC = () => {
                 role="button"
                 aria-label={`Open ${item.title}`}
                 onClick={() => handleOpenGallery(actualIndexInFiltered)}
-                className="relative rounded-[14px] overflow-hidden cursor-pointer bg-card group mb-[16px] break-inside-avoid border border-line/40 shadow-sm"
+                className="relative rounded-[18px] overflow-hidden cursor-pointer bg-white/[0.03] backdrop-blur-xl group mb-[20px] break-inside-avoid border border-white/[0.1] hover:border-gold/60 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-all duration-500 hover:shadow-[0_16px_50px_rgba(212,175,55,0.15)]"
                 style={{ aspectRatio: item.aspect }}
               >
+                {/* Hairline top reflection */}
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none z-20" />
+
                 {item.type === "video" ? (
                   <>
                     <video
@@ -307,20 +315,20 @@ export const ReferenceStyleBottomSections: React.FC = () => {
                         } catch {}
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/35 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 pointer-events-none" />
 
                     {/* Top Video Badge */}
-                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 text-white">
+                    <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-white shadow-lg">
                       <Film className="w-3 h-3 text-gold" />
-                      <span className="text-[10px] font-mono tracking-wider uppercase text-white/90">
+                      <span className="text-[10px] font-mono tracking-wider uppercase text-white/95">
                         Video
                       </span>
                     </div>
 
                     {/* Center Play Button Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-12 h-12 rounded-full bg-gold/90 text-black flex items-center justify-center shadow-xl transform transition-transform duration-300 group-hover:scale-110">
-                        <Play className="w-5 h-5 ml-0.5 fill-black" />
+                      <div className="w-12 h-12 rounded-full bg-gold/90 text-stone-950 flex items-center justify-center shadow-2xl transform transition-transform duration-300 group-hover:scale-115">
+                        <Play className="w-5 h-5 ml-0.5 fill-current" />
                       </div>
                     </div>
 
@@ -339,9 +347,9 @@ export const ReferenceStyleBottomSections: React.FC = () => {
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                     <div className="absolute bottom-3 left-3 right-3 z-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                      <p className="text-xs font-serif truncate text-white/90 drop-shadow">
+                      <p className="text-xs font-serif truncate text-white/95 drop-shadow">
                         {item.title}
                       </p>
                     </div>
@@ -358,7 +366,7 @@ export const ReferenceStyleBottomSections: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowAll(!showAll)}
-              className="btn inline-flex items-center gap-2 border-ink/40 hover:border-gold hover:bg-gold hover:text-white transition-all px-8 py-3.5 text-xs font-mono tracking-widest uppercase rounded-full shadow-sm bg-bg"
+              className="inline-flex items-center gap-2.5 border border-white/[0.18] hover:border-gold bg-white/[0.04] hover:bg-gold hover:text-stone-950 backdrop-blur-xl transition-all duration-300 px-8 py-3.5 text-xs font-mono tracking-widest uppercase rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.3)] text-stone-200"
             >
               {showAll ? (
                 <>
@@ -377,161 +385,263 @@ export const ReferenceStyleBottomSections: React.FC = () => {
       </section>
 
       {/* 2. FAQ Section */}
-      <section id="faq" className="px-[5vw] py-[12vh] bg-bg text-ink pt-0">
-        <div className="eyebrow">FAQ</div>
+      <section id="faq" className="px-[5vw] py-[12vh] bg-transparent text-ink pt-0 relative z-10">
+        <div className="eyebrow flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-gold" />
+          <span>Need Help</span>
+        </div>
         <h2
-          className="font-serif font-medium leading-[1.05] mb-[24px]"
+          className="font-serif font-medium leading-[1.05] mb-[32px]"
           style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
         >
-          Questions.
+          Frequently asked questions.
         </h2>
 
-        <div className="max-w-[760px] divide-y divide-line border-t border-b border-line">
-          <details className="py-[20px] group cursor-pointer">
-            <summary className="font-serif font-medium text-[24px] text-ink list-none flex justify-between items-center select-none">
+        <div className="max-w-[800px] space-y-4">
+          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>Where is the project located?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline">–</span>
+              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[10px] text-mut text-[16px] font-light leading-relaxed">
-              Varahi Anugrahams is situated along R.F. Road, Tadipatri — 515411, Andhra Pradesh.
+            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+              Varahi Anugrahams is situated along R.F. Road, Tadipatri — 515411, Anantapur District, Andhra Pradesh.
             </p>
           </details>
 
-          <details className="py-[20px] group cursor-pointer">
-            <summary className="font-serif font-medium text-[24px] text-ink list-none flex justify-between items-center select-none">
+          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>What are the pricing and payment terms?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline">–</span>
+              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[10px] text-mut text-[16px] font-light leading-relaxed">
-              Please enquire for current pricing, installment milestones, and availability.
+            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+              Please enquire for current unit pricing, milestone-linked installment plans, and villa availability.
             </p>
           </details>
 
-          <details className="py-[20px] group cursor-pointer">
-            <summary className="font-serif font-medium text-[24px] text-ink list-none flex justify-between items-center select-none">
+          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>When is possession?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline">–</span>
+              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[10px] text-mut text-[16px] font-light leading-relaxed">
-              Possession timelines and stage approvals will be shared upon private consultation.
+            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+              Possession timelines and stage approvals are shared during your one-on-one private consultation.
             </p>
           </details>
 
-          <details className="py-[20px] group cursor-pointer">
-            <summary className="font-serif font-medium text-[24px] text-ink list-none flex justify-between items-center select-none">
-              <span>Can I schedule a site visit?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline">–</span>
+          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
+              <span>Can I schedule a private site visit?</span>
+              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[10px] text-mut text-[16px] font-light leading-relaxed">
-              Yes — use the enquiry form below or connect with our promoter office on WhatsApp.
+            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+              Yes — submit the enquiry form below or message promoter Rangaiah Kotra directly on WhatsApp for an immediate walkthrough appointment.
             </p>
           </details>
         </div>
       </section>
 
       {/* 3. Enquire Section */}
-      <section id="enquire" className="px-[5vw] py-[12vh] bg-card text-ink">
-        <div className="eyebrow">Enquire</div>
-        <h2
-          className="font-serif font-medium leading-[1.05]"
-          style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
-        >
-          Schedule a site visit.
-        </h2>
-
-        {!submitted ? (
-          <form onSubmit={handleFormSubmit} className="grid gap-[16px] max-w-[560px] mt-[30px]" noValidate>
-            <label className="text-[12px] tracking-[0.12em] uppercase text-mut font-sans grid gap-[6px]">
-              Name
-              <input
-                type="text"
-                name="name"
-                autoComplete="name"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="font-inherit px-[14px] py-[13px] border border-line rounded-[8px] bg-bg text-ink"
-              />
-              <span className="text-[#c0533a] text-[13px] min-h-[1em]">{errors.name}</span>
-            </label>
-
-            <label className="text-[12px] tracking-[0.12em] uppercase text-mut font-sans grid gap-[6px]">
-              Phone or email
-              <input
-                type="text"
-                name="contact"
-                autoComplete="email"
-                value={form.contact}
-                onChange={(e) => setForm({ ...form, contact: e.target.value })}
-                className="font-inherit px-[14px] py-[13px] border border-line rounded-[8px] bg-bg text-ink"
-              />
-              <span className="text-[#c0533a] text-[13px] min-h-[1em]">{errors.contact}</span>
-            </label>
-
-            <label className="text-[12px] tracking-[0.12em] uppercase text-mut font-sans grid gap-[6px]">
-              Message
-              <textarea
-                name="msg"
-                rows={4}
-                value={form.msg}
-                onChange={(e) => setForm({ ...form, msg: e.target.value })}
-                className="font-inherit px-[14px] py-[13px] border border-line rounded-[8px] bg-bg text-ink resize-none"
-              />
-              <span className="text-[#c0533a] text-[13px] min-h-[1em]">{errors.msg}</span>
-            </label>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <button className="btn fill" type="submit">
-                Request a Visit
-              </button>
-              <a
-                href="https://wa.me/919492854666?text=Hello%20Rangaiah%20garu,%20I%20am%20interested%20in%20Varahi%20Anugrahams%20villas."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn inline-flex items-center gap-2 text-emerald-800 border-emerald-800 hover:bg-emerald-800 hover:text-white"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Chat on WhatsApp</span>
-              </a>
+      <section id="enquire" className="px-[5vw] py-[12vh] bg-transparent text-ink relative z-10">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-10">
+            <div className="eyebrow flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 text-gold" />
+              <span>Private Consultation</span>
             </div>
-          </form>
-        ) : (
-          <div className="max-w-[560px] mt-[30px] p-[20px] rounded-[10px] bg-[#2f6b4033] border border-[#2f6b4055] space-y-4">
-            <h4 className="font-serif text-2xl font-medium text-ink">Thank you, {form.name}.</h4>
-            <p className="text-sm text-mut leading-relaxed">
-              Your inquiry has been formatted. You can connect directly with Promoter{" "}
-              <strong>Rangaiah Kotra</strong> right now on WhatsApp:
-            </p>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn fill inline-flex items-center gap-2 bg-emerald-700 border-emerald-700 text-white"
+            <h2
+              className="font-serif font-medium leading-[1.05]"
+              style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>Send via WhatsApp (+91 9492854666)</span>
-            </a>
+              Schedule a site visit.
+            </h2>
+            <p className="text-stone-300 text-[16px] font-light mt-3 max-w-[540px]">
+              Connect with our promoter office for a private walkthrough, villa specifications, and floor plan consultations.
+            </p>
           </div>
-        )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Form Column (7 cols) */}
+            <div className="lg:col-span-7">
+              <SpotlightCard
+                className="p-8 md:p-10 rounded-[24px] bg-white/[0.03] backdrop-blur-2xl border border-white/[0.1] shadow-[0_16px_50px_rgba(0,0,0,0.4)]"
+                spotlightColor="rgba(212, 175, 55, 0.12)"
+              >
+                {!submitted ? (
+                  <form onSubmit={handleFormSubmit} className="space-y-5" noValidate>
+                    <div>
+                      <label className="text-[11px] font-mono tracking-[0.16em] uppercase text-stone-400 block mb-2">
+                        Your Name
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        autoComplete="name"
+                        placeholder="e.g. Rajesh Kumar"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.12] focus:border-gold focus:ring-1 focus:ring-gold text-white placeholder-stone-500 backdrop-blur-md outline-none transition-all text-sm"
+                      />
+                      {errors.name && (
+                        <span className="text-red-400 text-xs mt-1 block">{errors.name}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono tracking-[0.16em] uppercase text-stone-400 block mb-2">
+                        Phone or Email
+                      </label>
+                      <input
+                        type="text"
+                        name="contact"
+                        autoComplete="email"
+                        placeholder="+91 98765 43210 or email@domain.com"
+                        value={form.contact}
+                        onChange={(e) => setForm({ ...form, contact: e.target.value })}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.12] focus:border-gold focus:ring-1 focus:ring-gold text-white placeholder-stone-500 backdrop-blur-md outline-none transition-all text-sm"
+                      />
+                      {errors.contact && (
+                        <span className="text-red-400 text-xs mt-1 block">{errors.contact}</span>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-mono tracking-[0.16em] uppercase text-stone-400 block mb-2">
+                        Message or Preferred Date
+                      </label>
+                      <textarea
+                        name="msg"
+                        rows={4}
+                        placeholder="I would like to schedule a private walkthrough and receive detailed pricing..."
+                        value={form.msg}
+                        onChange={(e) => setForm({ ...form, msg: e.target.value })}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.12] focus:border-gold focus:ring-1 focus:ring-gold text-white placeholder-stone-500 backdrop-blur-md outline-none transition-all text-sm resize-none"
+                      />
+                      {errors.msg && (
+                        <span className="text-red-400 text-xs mt-1 block">{errors.msg}</span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <button
+                        type="submit"
+                        className="px-8 py-3.5 rounded-full bg-gold hover:bg-[#e5c158] text-stone-950 font-semibold text-xs font-mono tracking-widest uppercase transition-all duration-300 shadow-[0_0_24px_rgba(212,175,55,0.35)] cursor-pointer"
+                      >
+                        Request a Visit
+                      </button>
+                      <a
+                        href="https://wa.me/919492854666?text=Hello%20Rangaiah%20garu,%20I%20am%20interested%20in%20Varahi%20Anugrahams%20villas."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-mono tracking-wider uppercase transition-all flex items-center gap-2 cursor-pointer"
+                      >
+                        <MessageCircle className="w-4 h-4 text-emerald-400" />
+                        <span>Chat on WhatsApp</span>
+                      </a>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-4">
+                    <h4 className="font-serif text-2xl font-medium text-white">
+                      Thank you, {form.name}.
+                    </h4>
+                    <p className="text-sm text-stone-300 leading-relaxed">
+                      Your inquiry has been formatted. Connect directly with Promoter{" "}
+                      <strong className="text-white">Rangaiah Kotra</strong> on WhatsApp:
+                    </p>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs font-mono tracking-wider uppercase transition-all"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Send via WhatsApp (+91 9492854666)</span>
+                    </a>
+                  </div>
+                )}
+              </SpotlightCard>
+            </div>
+
+            {/* Direct Contact & Promoter Info Cards (5 cols) */}
+            <div className="lg:col-span-5 space-y-5">
+              <SpotlightCard
+                className="p-6 rounded-[20px] bg-white/[0.03] backdrop-blur-xl border border-white/[0.1] shadow-xl"
+                spotlightColor="rgba(212, 175, 55, 0.1)"
+              >
+                <div className="text-[11px] font-mono tracking-[0.16em] uppercase text-gold mb-2">
+                  Promoter Desk
+                </div>
+                <h3 className="font-serif text-2xl text-white font-medium mb-1">
+                  Rangaiah Kotra
+                </h3>
+                <p className="text-xs text-stone-400 mb-5">
+                  Sri Murali Cotton Press & Varahi Enclaves
+                </p>
+
+                <div className="space-y-3 text-sm text-stone-300">
+                  <a
+                    href="tel:+919492854666"
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-gold/40 text-stone-200 transition-all group"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Phone className="w-4 h-4 text-gold" />
+                      <span>+91 94928 54666</span>
+                    </span>
+                    <ArrowUpRight className="w-4 h-4 text-stone-500 group-hover:text-gold transition-colors" />
+                  </a>
+
+                  <a
+                    href="https://wa.me/919492854666"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-emerald-500/40 text-stone-200 transition-all group"
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <MessageCircle className="w-4 h-4 text-emerald-400" />
+                      <span>WhatsApp Direct Line</span>
+                    </span>
+                    <ArrowUpRight className="w-4 h-4 text-stone-500 group-hover:text-emerald-400 transition-colors" />
+                  </a>
+                </div>
+              </SpotlightCard>
+
+              <SpotlightCard
+                className="p-6 rounded-[20px] bg-white/[0.03] backdrop-blur-xl border border-white/[0.1] shadow-xl"
+                spotlightColor="rgba(212, 175, 55, 0.1)"
+              >
+                <div className="text-[11px] font-mono tracking-[0.16em] uppercase text-gold mb-2">
+                  Site Location
+                </div>
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-gold shrink-0 mt-0.5" />
+                  <p className="text-sm text-stone-300 leading-relaxed">
+                    R.F. Road, Tadipatri — 515411, Anantapur District, Andhra Pradesh.
+                  </p>
+                </div>
+              </SpotlightCard>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* 4. Footer */}
-      <footer className="bg-dark text-[#cfc6b2] px-[5vw] py-[8vh] flex justify-between flex-wrap gap-[24px] text-[14px]">
+      {/* 4. Luxury Footer */}
+      <footer className="relative z-10 bg-black/60 backdrop-blur-2xl border-t border-white/[0.08] text-stone-400 px-[5vw] py-[8vh] flex justify-between flex-wrap gap-[24px] text-[13px]">
         <div>
-          <div className="serif text-[22px] tracking-[0.2em] text-white uppercase">
+          <div className="serif text-[22px] tracking-[0.2em] text-white uppercase font-serif">
             VARAHI ANUGRAHAMS
           </div>
-          <p className="mt-2 text-[#a89f8e] text-[13px]">
+          <p className="mt-2 text-stone-400 text-[13px]">
             Promoter: Rangaiah Kotra (Sri Murali Cotton Press) · R.F. Road, Tadipatri — 515411
           </p>
-          <p className="mt-[10px] max-w-[420px] text-[12px] opacity-70">
-            Images and videos are artist’s impressions; the final development may vary.
+          <p className="mt-[10px] max-w-[420px] text-[12px] text-stone-500">
+            Images and videos are artist’s impressions; final development may vary based on approved plans.
           </p>
         </div>
-        <div className="text-right text-[#a89f8e] text-[13px] self-end">
+        <div className="text-right text-stone-500 text-[13px] self-end">
           © 2026 Varahi Anugrahams. All rights reserved.
         </div>
       </footer>

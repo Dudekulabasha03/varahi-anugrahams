@@ -27,9 +27,12 @@ export const ReferenceStyleIntro: React.FC = () => {
     <section
       ref={sectionRef}
       id="about"
-      className="px-[5vw] py-[12vh] bg-bg text-ink transition-colors"
+      className="px-[5vw] py-[12vh] bg-transparent text-ink transition-colors relative z-10"
     >
-      <div className="eyebrow">The Project</div>
+      <div className="eyebrow flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+        <span>The Project</span>
+      </div>
       <h2
         className="font-serif font-medium leading-[1.05] max-w-[15em]"
         style={{ fontSize: "clamp(34px, 6vw, 76px)" }}

@@ -238,7 +238,7 @@ export const ContinuousCinematicHero: React.FC = () => {
 
       {/* Bottom Interactive Chapter Navigation Dock ("Hover / Click Scene") */}
       <div className="absolute left-[5vw] right-[5vw] bottom-[28px] z-20 pointer-events-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
           {FILM_SCENES.map((scene, idx) => {
             const isActive = currentSceneIdx === idx;
             return (
@@ -249,10 +249,10 @@ export const ContinuousCinematicHero: React.FC = () => {
                 onMouseEnter={() => transitionToScene(idx)}
                 onClick={() => transitionToScene(idx)}
                 aria-label={`Jump to ${scene.label}`}
-                className={`group relative rounded-[8px] p-2 sm:p-2.5 cursor-pointer backdrop-blur-md transition-all duration-300 border text-left ${
+                className={`group relative rounded-[12px] p-2.5 sm:p-3 cursor-pointer backdrop-blur-2xl transition-all duration-300 border text-left shadow-lg ${
                   isActive
-                    ? "bg-black/80 border-gold shadow-lg"
-                    : "bg-black/45 border-white/15 hover:border-gold/60 hover:bg-black/65"
+                    ? "bg-stone-950/85 border-gold shadow-[0_4px_20px_0_rgba(169,139,79,0.25)]"
+                    : "bg-stone-950/40 border-white/[0.12] hover:border-gold/60 hover:bg-stone-950/65"
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">

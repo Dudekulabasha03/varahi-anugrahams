@@ -89,10 +89,10 @@ export const GsapCinematicScene: React.FC = () => {
     <div
       ref={containerRef}
       id="scene"
-      className="relative w-full h-screen bg-[#16140f] text-white select-none overflow-hidden"
+      className="relative w-full h-screen bg-[#0b0907] text-white select-none overflow-hidden"
     >
       {/* Full-Screen Hardware-Accelerated Video — 100% Unobstructed */}
-      <div className="absolute inset-0 bg-[#16140f] overflow-hidden">
+      <div className="absolute inset-0 bg-[#0b0907] overflow-hidden">
         <video
           ref={videoRef}
           src="/media/videos/assembly-puzzle.mp4"

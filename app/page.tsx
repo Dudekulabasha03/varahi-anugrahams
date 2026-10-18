@@ -9,25 +9,17 @@ import { ReferenceStyleEditorialSections } from "@/components/ReferenceStyleEdit
 import { ReferenceStyleBottomSections } from "@/components/ReferenceStyleBottomSections";
 import { LuxuryCursor } from "@/components/ui/LuxuryCursor";
 
-import Link from "next/link";
-
 export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-bg text-ink overflow-x-hidden selection:bg-gold selection:text-white">
       {/* 1. Interactive Magnetic Cursor: "PLAY" over video stages, "ZOOM" over photos */}
       <LuxuryCursor />
 
-      {/* Floating 21st.dev & ReactBits Glassy Experiment Switcher */}
-      <div className="fixed bottom-6 right-6 z-40 pointer-events-auto">
-        <Link
-          href="/experiment"
-          className="group flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/85 hover:bg-black text-white border border-gold/60 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105"
-        >
-          <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-          <span className="text-xs font-mono tracking-wider uppercase text-gold font-medium">
-            Glassy Experiment Edition →
-          </span>
-        </Link>
+      {/* Ambient Lighting Orbs (ReactBits style) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#cda260]/10 via-[#cda260]/5 to-transparent blur-[160px]" />
+        <div className="absolute top-[40%] right-[-15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-bl from-[#9c783e]/10 via-[#664b22]/5 to-transparent blur-[180px]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-tr from-[#cda260]/8 via-[#856128]/5 to-transparent blur-[160px]" />
       </div>
 
       {/* 2. Fixed Luxury Navigation Bar */}

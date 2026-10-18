@@ -5,34 +5,26 @@
 @tailwind utilities;
 
 :root {
-  --bg: #f6f1e7;
-  --ink: #26231f;
-  --mut: #6e675c;
-  --gold: #a98b4f;
-  --gold-hover: #96793e;
-  --dark: #16140f;
-  --card: #ebe4d4;
-  --line: #d9d0bc;
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #14120e;
-    --ink: #efe8d8;
-    --mut: #a89f8e;
-    --card: #1f1c16;
-    --line: #34301f;
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg: #14120e;
-  --ink: #efe8d8;
+  --bg: #0b0907;
+  --ink: #f5efe6;
   --mut: #a89f8e;
-  --card: #1f1c16;
-  --line: #34301f;
+  --gold: #d4af37;
+  --gold-hover: #e5c158;
+  --dark: #060504;
+  --card: #14110b;
+  --line: rgba(255, 255, 255, 0.08);
+  color-scheme: dark;
+}
+
+:root[data-theme="dark"], :root[data-theme="light"] {
+  --bg: #0b0907;
+  --ink: #f5efe6;
+  --mut: #a89f8e;
+  --gold: #d4af37;
+  --gold-hover: #e5c158;
+  --dark: #060504;
+  --card: #14110b;
+  --line: rgba(255, 255, 255, 0.08);
   color-scheme: dark;
 }
 
