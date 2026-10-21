@@ -175,13 +175,13 @@ export const ReferenceStyleEditorialSections: React.FC = () => {
 
             {/* Controls Bar at Bottom */}
             <div
-              className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 z-10 flex items-center justify-between text-white pointer-events-auto"
+              className="absolute bottom-3 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-6 z-10 flex items-center justify-between text-white pointer-events-auto gap-2"
               onClick={(e) => e.stopPropagation()}
             >
-              <span className="text-xs sm:text-sm font-serif tracking-wide text-white/90 drop-shadow">
+              <span className="text-[11px] sm:text-sm font-serif tracking-wide text-white/90 drop-shadow truncate max-w-[50%] sm:max-w-none">
                 30 FT Central Avenue &amp; Symmetrical Villa Enclave
               </span>
-              <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
                 <button
                   type="button"
                   aria-label={isCommunityMuted ? "Unmute audio" : "Mute audio"}

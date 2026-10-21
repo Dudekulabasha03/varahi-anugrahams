@@ -80,34 +80,34 @@ export const UniversalLightbox: React.FC<UniversalLightboxProps> = ({
     >
       {/* Top Header Bar */}
       <div
-        className="absolute top-0 left-0 right-0 p-4 sm:p-6 flex items-center justify-between z-10 bg-gradient-to-b from-black/80 to-transparent pointer-events-auto"
+        className="absolute top-0 left-0 right-0 p-3 sm:p-6 flex items-center justify-between z-10 bg-gradient-to-b from-black/85 via-black/50 to-transparent pointer-events-auto gap-3"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-left">
-          <p className="text-xs uppercase tracking-[0.2em] text-gold-400 font-sans">
+        <div className="text-left truncate">
+          <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-gold font-sans">
             {currentIndex + 1} of {items.length}
           </p>
           {currentItem.title && (
-            <h4 className="font-serif text-lg sm:text-xl text-ivory-50 tracking-wide">
+            <h4 className="font-serif text-sm sm:text-lg md:text-xl text-white tracking-wide truncate">
               {currentItem.title}
             </h4>
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={toggleZoom}
             aria-label={isZoomed ? "Zoom out" : "Zoom in"}
-            className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           >
-            {isZoomed ? <ZoomOut className="w-5 h-5 text-gold-300" /> : <ZoomIn className="w-5 h-5" />}
+            {isZoomed ? <ZoomOut className="w-4 h-4 sm:w-5 sm:h-5 text-gold" /> : <ZoomIn className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
           <button
             onClick={onClose}
             aria-label="Close lightbox"
-            className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="p-2 sm:p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
       </div>
@@ -118,16 +118,16 @@ export const UniversalLightbox: React.FC<UniversalLightboxProps> = ({
           <button
             onClick={handlePrev}
             aria-label="Previous image"
-            className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/50 hover:bg-gold-500/80 text-white hover:text-black transition-all z-20"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/60 hover:bg-gold text-white hover:text-black transition-all z-20 backdrop-blur-sm"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
           <button
             onClick={handleNext}
             aria-label="Next image"
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/50 hover:bg-gold-500/80 text-white hover:text-black transition-all z-20"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 w-9 h-9 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-black/60 hover:bg-gold text-white hover:text-black transition-all z-20 backdrop-blur-sm"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </>
       )}

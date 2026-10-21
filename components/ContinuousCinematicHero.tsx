@@ -188,7 +188,7 @@ export const ContinuousCinematicHero: React.FC = () => {
   return (
     <header
       id="top"
-      className="relative h-screen min-h-[580px] text-white flex items-end overflow-hidden bg-dark select-none"
+      className="relative h-[100dvh] min-h-[580px] text-white flex items-end overflow-hidden bg-dark select-none"
     >
       {/* Dual Video Players with Hardware-Accelerated Crossfade */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#3a3226] via-[#15120d] to-[#2b2415] overflow-hidden">
@@ -227,31 +227,31 @@ export const ContinuousCinematicHero: React.FC = () => {
       </div>
 
       {/* Top Floating Badges (Play button completely removed as requested) */}
-      <div className="absolute top-[80px] sm:top-[90px] left-[5vw] right-[5vw] z-10 flex items-center justify-between pointer-events-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-xs font-serif tracking-wider text-gold shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-gold" />
+      <div className="absolute top-[68px] sm:top-[85px] left-[4vw] sm:left-[5vw] right-[4vw] sm:right-[5vw] z-10 flex items-center justify-between pointer-events-auto">
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-serif tracking-wider text-gold shadow-sm">
+          <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold" />
           <span>{PROJECT_CONFIG.brand.blessing}</span>
         </div>
       </div>
 
-      {/* Hero Action Buttons Stage (Sentence and titles removed for clean, unobstructed cinematic view) */}
-      <div className="relative z-10 px-[5vw] pb-[13vh] sm:pb-[14vh]">
-        <div className="flex flex-wrap items-center gap-3">
-          <a href="#about" className="btn fill shadow-lg backdrop-blur-sm">
+      {/* Hero Action Buttons Stage */}
+      <div className="relative z-10 px-[4vw] sm:px-[5vw] pb-[88px] sm:pb-[105px] md:pb-[115px]">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <a href="#about" className="btn fill shadow-lg backdrop-blur-sm text-xs sm:text-sm px-4 sm:px-7 py-2.5 sm:py-3.5">
             Explore the Project
           </a>
-          <a href="#plans" className="btn bg-black/30 backdrop-blur-md border-white/40 hover:border-gold text-white shadow-lg">
+          <a href="#plans" className="btn bg-black/40 backdrop-blur-md border-white/40 hover:border-gold text-white shadow-lg text-xs sm:text-sm px-3.5 sm:px-6 py-2.5 sm:py-3.5">
             Floor Plans
           </a>
-          <a href="#enquire" className="btn bg-black/30 backdrop-blur-md border-white/40 hover:border-gold text-white shadow-lg">
+          <a href="#enquire" className="btn bg-black/40 backdrop-blur-md border-white/40 hover:border-gold text-white shadow-lg text-xs sm:text-sm px-3.5 sm:px-6 py-2.5 sm:py-3.5">
             Enquire
           </a>
         </div>
       </div>
 
-      {/* Bottom Interactive Chapter Navigation Dock ("Hover / Click Scene") */}
-      <div className="absolute left-[5vw] right-[5vw] bottom-[28px] z-20 pointer-events-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+      {/* Bottom Interactive Chapter Navigation Dock: Horizontal snap-swipe on mobile, 6-col grid on desktop */}
+      <div className="absolute left-[3vw] sm:left-[5vw] right-[3vw] sm:right-[5vw] bottom-[14px] sm:bottom-[22px] z-20 pointer-events-auto">
+        <div className="flex md:grid md:grid-cols-6 gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1 px-1">
           {FILM_SCENES.map((scene, idx) => {
             const isActive = currentSceneIdx === idx;
             return (
@@ -266,10 +266,10 @@ export const ContinuousCinematicHero: React.FC = () => {
                   if (currentSceneIdx !== idx) transitionToScene(idx);
                 }}
                 aria-label={`Jump to ${scene.label}`}
-                className={`group relative rounded-[12px] p-2.5 sm:p-3 cursor-pointer backdrop-blur-xl transition-all duration-200 border text-left shadow-lg will-change-transform ${
+                className={`group relative rounded-[12px] p-2 sm:p-2.5 md:p-3 cursor-pointer backdrop-blur-xl transition-all duration-200 border text-left shadow-lg will-change-transform shrink-0 snap-start w-[138px] sm:w-[155px] md:w-auto ${
                   isActive
-                    ? "bg-stone-950/85 border-gold shadow-[0_4px_20px_0_rgba(169,139,79,0.25)]"
-                    : "bg-stone-950/40 border-white/[0.12] hover:border-gold/60 hover:bg-stone-950/65"
+                    ? "bg-stone-950/90 border-gold shadow-[0_4px_20px_0_rgba(169,139,79,0.3)]"
+                    : "bg-stone-950/45 border-white/[0.12] hover:border-gold/60 hover:bg-stone-950/70"
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">

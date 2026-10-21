@@ -89,7 +89,7 @@ export const GsapCinematicScene: React.FC = () => {
     <div
       ref={containerRef}
       id="scene"
-      className="relative w-full h-screen bg-[#0b0907] text-white select-none overflow-hidden"
+      className="relative w-full h-[100dvh] min-h-[580px] bg-[#0b0907] text-white select-none overflow-hidden"
     >
       {/* Full-Screen Hardware-Accelerated Video — 100% Unobstructed */}
       <div className="absolute inset-0 bg-[#0b0907] overflow-hidden">
@@ -111,7 +111,7 @@ export const GsapCinematicScene: React.FC = () => {
       {beats.map((beat, i) => (
         <div
           key={i}
-          className={`absolute left-[5vw] bottom-[12vh] max-w-[540px] transition-all duration-500 z-20 ${
+          className={`absolute left-[5vw] right-[5vw] bottom-[10vh] sm:bottom-[12vh] max-w-[540px] transition-all duration-500 z-20 ${
             activeBeat === i
               ? "opacity-100 translate-y-0 pointer-events-auto"
               : "opacity-0 translate-y-[20px] pointer-events-none"
@@ -122,7 +122,7 @@ export const GsapCinematicScene: React.FC = () => {
           </div>
           <h2
             className="font-serif font-medium leading-[1.05]"
-            style={{ fontSize: "clamp(32px, 5vw, 64px)" }}
+            style={{ fontSize: "clamp(26px, 6vw, 64px)" }}
           >
             {beat.title}
           </h2>

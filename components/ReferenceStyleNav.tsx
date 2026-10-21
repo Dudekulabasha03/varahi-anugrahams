@@ -14,22 +14,22 @@ export const ReferenceStyleNav: React.FC = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-[5vw] py-5 flex items-center justify-between pointer-events-none transition-all duration-300">
+    <header className="fixed top-0 left-0 right-0 z-50 px-3 sm:px-[5vw] py-3 sm:py-5 flex items-center justify-between pointer-events-none transition-all duration-300">
       {/* Floating Glass Island (21st.dev style) */}
       <nav
-        className={`w-full max-w-[1240px] mx-auto flex items-center justify-between px-6 py-3.5 rounded-full border border-white/[0.12] bg-stone-950/50 backdrop-blur-2xl pointer-events-auto transition-all duration-500 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] ${
-          scrolled ? "bg-stone-950/85 border-gold/30 py-3" : ""
+        className={`w-full max-w-[1240px] mx-auto flex items-center justify-between px-3.5 sm:px-6 py-2 sm:py-3.5 rounded-full border border-white/[0.12] bg-stone-950/50 backdrop-blur-2xl pointer-events-auto transition-all duration-500 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] ${
+          scrolled ? "bg-stone-950/85 border-gold/30 py-2 sm:py-3" : ""
         }`}
       >
         {/* Brand */}
-        <div className="flex items-center gap-3">
-          <a href="#top" className="flex items-center gap-2 group">
-            <span className="w-2.5 h-2.5 rounded-full bg-gold animate-pulse" />
-            <span className="font-serif text-lg tracking-[0.25em] uppercase text-white font-semibold group-hover:text-gold transition-colors">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <a href="#top" className="flex items-center gap-1.5 sm:gap-2 group">
+            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-gold animate-pulse shrink-0" />
+            <span className="font-serif text-[13px] sm:text-base md:text-lg tracking-[0.15em] sm:tracking-[0.25em] uppercase text-white font-semibold group-hover:text-gold transition-colors truncate">
               VARAHI ANUGRAHAMS
             </span>
           </a>
-          <span className="hidden lg:inline-block text-[11px] font-mono text-stone-400 border-l border-white/20 pl-3 uppercase tracking-wider">
+          <span className="hidden xl:inline-block text-[11px] font-mono text-stone-400 border-l border-white/20 pl-3 uppercase tracking-wider">
             Tadipatri · Gated Luxury
           </span>
         </div>
@@ -64,10 +64,10 @@ export const ReferenceStyleNav: React.FC = () => {
         </ul>
 
         {/* Right CTA / Mobile Toggle */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <a
             href="#enquire"
-            className="px-5 py-2 rounded-full bg-gold hover:bg-gold-hover text-black text-xs font-mono font-semibold uppercase tracking-wider transition-all shadow-md shadow-gold/20"
+            className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-full bg-gold hover:bg-gold-hover text-black text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider transition-all shadow-md shadow-gold/20"
           >
             Enquire
           </a>
@@ -77,7 +77,7 @@ export const ReferenceStyleNav: React.FC = () => {
             type="button"
             aria-label="Toggle Navigation Menu"
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden w-9 h-9 rounded-full bg-white/[0.08] border border-white/15 flex items-center justify-center text-white"
+            className="md:hidden w-8 h-8 rounded-full bg-white/[0.08] border border-white/15 flex items-center justify-center text-white"
           >
             {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
@@ -86,7 +86,7 @@ export const ReferenceStyleNav: React.FC = () => {
 
       {/* Mobile Drawer */}
       {menuOpen && (
-        <div className="md:hidden fixed inset-x-[5vw] top-[85px] p-6 rounded-[24px] bg-stone-950/95 border border-white/15 backdrop-blur-2xl shadow-2xl z-50 pointer-events-auto animate-fade-in text-center">
+        <div className="md:hidden fixed inset-x-3 sm:inset-x-[5vw] top-[66px] sm:top-[85px] p-5 sm:p-6 rounded-[20px] sm:rounded-[24px] bg-stone-950/95 border border-white/15 backdrop-blur-2xl shadow-2xl z-50 pointer-events-auto animate-fade-in text-center">
           <ul className="space-y-5 text-sm font-mono uppercase tracking-wider text-stone-200">
             <li>
               <a href="#about" onClick={() => setMenuOpen(false)} className="hover:text-gold block py-1">

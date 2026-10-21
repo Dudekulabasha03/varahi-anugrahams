@@ -218,8 +218,8 @@ export const ReferenceStyleBottomSections: React.FC = () => {
     <>
       {/* 1. Gallery Section */}
       {/* 1. Gallery Section */}
-      <section id="gallery" className="px-[5vw] py-[12vh] bg-transparent text-ink relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <section id="gallery" className="px-4 sm:px-[5vw] py-[8vh] sm:py-[12vh] bg-transparent text-ink relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-10">
           <div>
             <div className="eyebrow flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-gold" />
@@ -227,18 +227,18 @@ export const ReferenceStyleBottomSections: React.FC = () => {
             </div>
             <h2
               className="font-serif font-medium leading-[1.05]"
-              style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
+              style={{ fontSize: "clamp(28px, 5vw, 64px)" }}
             >
               Moments from the project.
             </h2>
           </div>
 
           {/* Category Filter Pills (21st.dev Glassy Style) */}
-          <div className="flex items-center gap-2.5 self-start md:self-auto flex-wrap">
+          <div className="flex items-center gap-2 self-start md:self-auto overflow-x-auto no-scrollbar max-w-full pb-1">
             <button
               type="button"
               onClick={() => setActiveFilter("all")}
-              className={`px-4 py-2 rounded-full text-xs font-mono tracking-wider uppercase transition-all duration-300 border ${
+              className={`px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-mono tracking-wider uppercase transition-all duration-300 border shrink-0 ${
                 activeFilter === "all"
                   ? "bg-gold text-stone-950 border-gold shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold"
                   : "bg-white/[0.04] text-stone-300 border-white/[0.1] hover:border-gold/50 backdrop-blur-md hover:text-white"
@@ -385,59 +385,59 @@ export const ReferenceStyleBottomSections: React.FC = () => {
       </section>
 
       {/* 2. FAQ Section */}
-      <section id="faq" className="px-[5vw] py-[12vh] bg-transparent text-ink pt-0 relative z-10">
+      <section id="faq" className="px-4 sm:px-[5vw] py-[8vh] sm:py-[12vh] bg-transparent text-ink pt-0 relative z-10">
         <div className="eyebrow flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-gold" />
           <span>Need Help</span>
         </div>
         <h2
-          className="font-serif font-medium leading-[1.05] mb-[32px]"
-          style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
+          className="font-serif font-medium leading-[1.05] mb-6 sm:mb-8"
+          style={{ fontSize: "clamp(28px, 5vw, 64px)" }}
         >
           Frequently asked questions.
         </h2>
 
-        <div className="max-w-[800px] space-y-4">
-          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
-            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
+        <div className="max-w-[800px] space-y-3 sm:space-y-4">
+          <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[18px] sm:text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>Where is the project located?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+            <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
               Varahi Anugrahams is situated along R.F. Road, Tadipatri — 515411, Anantapur District, Andhra Pradesh.
             </p>
           </details>
 
-          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
-            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
+          <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[18px] sm:text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>What are the pricing and payment terms?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+            <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
               Please enquire for current unit pricing, milestone-linked installment plans, and villa availability.
             </p>
           </details>
 
-          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
-            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
+          <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[18px] sm:text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>When is possession?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+            <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
               Possession timelines and stage approvals are shared during your one-on-one private consultation.
             </p>
           </details>
 
-          <details className="group cursor-pointer rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
-            <summary className="font-serif font-medium text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
+          <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
+            <summary className="font-serif font-medium text-[18px] sm:text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
               <span>Can I schedule a private site visit?</span>
-              <span className="text-gold text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
-              <span className="text-gold text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
+              <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-[14px] text-stone-300 text-[15px] md:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-4">
+            <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
               Yes — submit the enquiry form below or message promoter Rangaiah Kotra directly on WhatsApp for an immediate walkthrough appointment.
             </p>
           </details>
@@ -445,29 +445,29 @@ export const ReferenceStyleBottomSections: React.FC = () => {
       </section>
 
       {/* 3. Enquire Section */}
-      <section id="enquire" className="px-[5vw] py-[12vh] bg-transparent text-ink relative z-10">
+      <section id="enquire" className="px-4 sm:px-[5vw] py-[8vh] sm:py-[12vh] bg-transparent text-ink relative z-10">
         <div className="max-w-[1200px] mx-auto">
-          <div className="mb-10">
+          <div className="mb-8 sm:mb-10">
             <div className="eyebrow flex items-center gap-2">
               <Calendar className="w-3.5 h-3.5 text-gold" />
               <span>Private Consultation</span>
             </div>
             <h2
               className="font-serif font-medium leading-[1.05]"
-              style={{ fontSize: "clamp(34px, 5vw, 64px)" }}
+              style={{ fontSize: "clamp(28px, 5vw, 64px)" }}
             >
               Schedule a site visit.
             </h2>
-            <p className="text-stone-300 text-[16px] font-light mt-3 max-w-[540px]">
+            <p className="text-stone-300 text-sm sm:text-[16px] font-light mt-3 max-w-[540px]">
               Connect with our promoter office for a private walkthrough, villa specifications, and floor plan consultations.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
             {/* Form Column (7 cols) */}
             <div className="lg:col-span-7">
               <SpotlightCard
-                className="p-8 md:p-10 rounded-[24px] bg-white/[0.03] backdrop-blur-2xl border border-white/[0.1] shadow-[0_16px_50px_rgba(0,0,0,0.4)]"
+                className="p-5 sm:p-8 md:p-10 rounded-[20px] sm:rounded-[24px] bg-white/[0.03] backdrop-blur-2xl border border-white/[0.1] shadow-[0_16px_50px_rgba(0,0,0,0.4)]"
                 spotlightColor="rgba(212, 175, 55, 0.12)"
               >
                 {!submitted ? (
@@ -629,19 +629,19 @@ export const ReferenceStyleBottomSections: React.FC = () => {
       </section>
 
       {/* 4. Luxury Footer */}
-      <footer className="relative z-10 bg-black/60 backdrop-blur-2xl border-t border-white/[0.08] text-stone-400 px-[5vw] py-[8vh] flex justify-between flex-wrap gap-[24px] text-[13px]">
+      <footer className="relative z-10 bg-black/60 backdrop-blur-2xl border-t border-white/[0.08] text-stone-400 px-4 sm:px-[5vw] py-8 sm:py-[8vh] flex flex-col sm:flex-row justify-between gap-6 text-[13px]">
         <div>
-          <div className="serif text-[22px] tracking-[0.2em] text-white uppercase font-serif">
+          <div className="serif text-lg sm:text-[22px] tracking-[0.2em] text-white uppercase font-serif">
             VARAHI ANUGRAHAMS
           </div>
-          <p className="mt-2 text-stone-400 text-[13px]">
+          <p className="mt-2 text-stone-400 text-xs sm:text-[13px]">
             Promoter: Rangaiah Kotra (Sri Murali Cotton Press) · R.F. Road, Tadipatri — 515411
           </p>
-          <p className="mt-[10px] max-w-[420px] text-[12px] text-stone-500">
+          <p className="mt-2 max-w-[420px] text-[11px] sm:text-[12px] text-stone-500">
             Images and videos are artist’s impressions; final development may vary based on approved plans.
           </p>
         </div>
-        <div className="text-right text-stone-500 text-[13px] self-end">
+        <div className="text-left sm:text-right text-stone-500 text-xs sm:text-[13px] self-start sm:self-end">
           © 2026 Varahi Anugrahams. All rights reserved.
         </div>
       </footer>
