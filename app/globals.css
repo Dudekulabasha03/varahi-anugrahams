@@ -57,36 +57,40 @@ a {
   color: inherit;
 }
 
-/* Button styles matching reference */
-.btn {
-  display: inline-block;
-  padding: 14px 28px;
-  border-radius: 40px;
-  border: 1px solid currentColor;
-  text-decoration: none;
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background: none;
-  color: inherit;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-}
+@layer components {
+  /* Button styles matching reference */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--btn-py, 12px) var(--btn-px, 24px);
+    border-radius: 40px;
+    border: 1px solid currentColor;
+    text-decoration: none;
+    font-size: var(--btn-fs, 13px);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
 
-.btn.fill {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: #fff;
-}
+  .btn.fill {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+  }
 
-.btn.fill:hover {
-  background: var(--gold-hover);
-  border-color: var(--gold-hover);
-}
+  .btn.fill:hover {
+    background: var(--gold-hover);
+    border-color: var(--gold-hover);
+  }
 
-.btn:hover {
-  border-color: var(--gold);
+  .btn:hover {
+    border-color: var(--gold);
+  }
 }
 
 /* Eyebrow tag */

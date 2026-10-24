@@ -85,21 +85,37 @@ const FILM_SCENES: FilmScene[] = [
   },
 ];
 
+// Helper to strictly enforce mobile iOS/Safari autoplay properties on HTML5 video elements
+const ensureVideoAttrs = (video: HTMLVideoElement | null) => {
+  if (!video) return;
+  video.muted = true;
+  video.defaultMuted = true;
+  video.playsInline = true;
+  video.setAttribute("muted", "");
+  video.setAttribute("playsinline", "");
+  video.setAttribute("webkit-playsinline", "true");
+  video.setAttribute("x5-playsinline", "true");
+};
+
 export const ContinuousCinematicHero: React.FC = () => {
   const [currentSceneIdx, setCurrentSceneIdx] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying] = useState(true);
 
-  // Dual video player references for zero-black-flash seamless cross-fading
+  // Dual video player references for zero-black-flash seamless cross-fading & background prebuffering
   const videoRefA = useRef<HTMLVideoElement>(null);
   const videoRefB = useRef<HTMLVideoElement>(null);
   const [activePlayer, setActivePlayer] = useState<"A" | "B">("A");
 
-  // Direct DOM references for progress bars to prevent 60fps React re-renders
+  // Direct DOM references for progress bars & cards to prevent React re-renders per frame
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  // Time tracker for fallback mobile progression
+  const sceneStartTimeRef = useRef<number>(Date.now());
 
   const currentScene = FILM_SCENES[currentSceneIdx];
 
-  // Transition to a specific scene index with smooth cross-fade
+  // Transition to a specific scene index with smooth cross-fade & background preloading
   const transitionToScene = useCallback(
     (nextIdx: number) => {
       const targetScene = FILM_SCENES[nextIdx];
@@ -107,7 +123,9 @@ export const ContinuousCinematicHero: React.FC = () => {
       const nextVideo = nextPlayer === "A" ? videoRefA.current : videoRefB.current;
       const prevVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
 
-      // Reset inactive bars
+      sceneStartTimeRef.current = Date.now();
+
+      // Reset inactive progress bars directly in DOM
       barRefs.current.forEach((bar, idx) => {
         if (bar && idx !== nextIdx) {
           bar.style.width = "0%";
@@ -115,22 +133,57 @@ export const ContinuousCinematicHero: React.FC = () => {
       });
 
       if (nextVideo) {
-        nextVideo.src = targetScene.src;
-        nextVideo.currentTime = targetScene.startTime || 0;
-        nextVideo
-          .play()
-          .then(() => {
+        ensureVideoAttrs(nextVideo);
+
+        const currentSrc = nextVideo.currentSrc || nextVideo.src || "";
+        if (!currentSrc.includes(targetScene.src)) {
+          nextVideo.src = targetScene.src;
+          nextVideo.load();
+        }
+
+        const startPlayback = () => {
+          if (targetScene.startTime) {
+            try {
+              nextVideo.currentTime = targetScene.startTime;
+            } catch (_) {}
+          }
+          ensureVideoAttrs(nextVideo);
+          const playPromise = nextVideo.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                setActivePlayer(nextPlayer);
+                setCurrentSceneIdx(nextIdx);
+
+                // Pause the previous video after the 600ms crossfade
+                setTimeout(() => {
+                  if (prevVideo) prevVideo.pause();
+                }, 600);
+
+                // Preload the next upcoming scene into the idle player
+                const upcomingIdx = (nextIdx + 1) % FILM_SCENES.length;
+                if (prevVideo) {
+                  ensureVideoAttrs(prevVideo);
+                  prevVideo.src = FILM_SCENES[upcomingIdx].src;
+                  prevVideo.preload = "auto";
+                  prevVideo.load();
+                }
+              })
+              .catch(() => {
+                setActivePlayer(nextPlayer);
+                setCurrentSceneIdx(nextIdx);
+              });
+          } else {
             setActivePlayer(nextPlayer);
             setCurrentSceneIdx(nextIdx);
-            // After fade transition, pause previous
-            setTimeout(() => {
-              if (prevVideo) prevVideo.pause();
-            }, 600);
-          })
-          .catch(() => {
-            setActivePlayer(nextPlayer);
-            setCurrentSceneIdx(nextIdx);
-          });
+          }
+        };
+
+        if (targetScene.startTime && nextVideo.readyState < 1) {
+          nextVideo.addEventListener("loadedmetadata", startPlayback, { once: true });
+        } else {
+          startPlayback();
+        }
       } else {
         setCurrentSceneIdx(nextIdx);
       }
@@ -138,7 +191,7 @@ export const ContinuousCinematicHero: React.FC = () => {
     [activePlayer]
   );
 
-  // Automatic timed progression across scenes (zero React component re-renders per frame)
+  // Automatic timed progression across scenes (zero React re-renders per frame)
   useEffect(() => {
     let animationFrameId: number;
 
@@ -149,24 +202,35 @@ export const ContinuousCinematicHero: React.FC = () => {
       }
 
       const activeVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
-      if (activeVideo && !activeVideo.paused) {
+      const dur = currentScene.duration;
+      let p = 0;
+
+      if (activeVideo && !activeVideo.paused && !isNaN(activeVideo.currentTime)) {
         const startOffset = currentScene.startTime || 0;
         const elapsed = activeVideo.currentTime - startOffset;
-        const dur = currentScene.duration;
-        const p = Math.min(1, Math.max(0, elapsed / dur));
-
-        // Direct hardware-accelerated style update
-        const activeBar = barRefs.current[currentSceneIdx];
-        if (activeBar) {
-          activeBar.style.width = `${p * 100}%`;
-        }
+        p = Math.min(1, Math.max(0, elapsed / dur));
 
         if (elapsed >= dur) {
-          // Advance to next scene
           const nextIdx = (currentSceneIdx + 1) % FILM_SCENES.length;
           transitionToScene(nextIdx);
           return;
         }
+      } else {
+        // Fallback progress clock for mobile devices buffering or low-power mode
+        const elapsed = (Date.now() - sceneStartTimeRef.current) / 1000;
+        p = Math.min(1, Math.max(0, elapsed / dur));
+
+        if (elapsed >= dur) {
+          const nextIdx = (currentSceneIdx + 1) % FILM_SCENES.length;
+          transitionToScene(nextIdx);
+          return;
+        }
+      }
+
+      // Update progress bar directly via DOM style
+      const activeBar = barRefs.current[currentSceneIdx];
+      if (activeBar) {
+        activeBar.style.width = `${p * 100}%`;
       }
 
       animationFrameId = requestAnimationFrame(checkProgress);
@@ -176,19 +240,62 @@ export const ContinuousCinematicHero: React.FC = () => {
     return () => cancelAnimationFrame(animationFrameId);
   }, [currentSceneIdx, activePlayer, isPlaying, currentScene.duration, currentScene.startTime, transitionToScene]);
 
-  // Initial playback
+  // Initial playback mount & background preloading setup
   useEffect(() => {
+    sceneStartTimeRef.current = Date.now();
+
+    // Initialize Player A with Scene 0
     if (videoRefA.current) {
+      ensureVideoAttrs(videoRefA.current);
       videoRefA.current.src = FILM_SCENES[0].src;
       videoRefA.current.currentTime = FILM_SCENES[0].startTime || 0;
-      videoRefA.current.play().catch(() => {});
+      videoRefA.current.preload = "auto";
+      const p = videoRefA.current.play();
+      if (p !== undefined) {
+        p.catch(() => {
+          // Will auto-unlock on first user touch/click
+        });
+      }
     }
-  }, []);
+
+    // Preload Player B with Scene 1
+    if (videoRefB.current) {
+      ensureVideoAttrs(videoRefB.current);
+      videoRefB.current.src = FILM_SCENES[1].src;
+      videoRefB.current.preload = "auto";
+      videoRefB.current.load();
+    }
+
+    // Global touch/click unlock for mobile browsers (iOS Low Power Mode, etc.)
+    const unlockMobileVideo = () => {
+      const activeVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
+      if (activeVideo && activeVideo.paused) {
+        ensureVideoAttrs(activeVideo);
+        activeVideo.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener("touchstart", unlockMobileVideo, { once: true, passive: true });
+    window.addEventListener("click", unlockMobileVideo, { once: true, passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", unlockMobileVideo);
+      window.removeEventListener("click", unlockMobileVideo);
+    };
+  }, [activePlayer]);
+
+  // Auto-scroll active chapter card into view horizontally on mobile
+  useEffect(() => {
+    const activeCard = cardRefs.current[currentSceneIdx];
+    if (activeCard && typeof window !== "undefined" && window.innerWidth < 768) {
+      activeCard.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+    }
+  }, [currentSceneIdx]);
 
   return (
     <header
       id="top"
-      className="relative h-[100dvh] min-h-[580px] text-white flex items-end overflow-hidden bg-dark select-none"
+      className="relative h-[100dvh] min-h-[580px] text-white flex flex-col justify-end overflow-hidden bg-dark select-none"
     >
       {/* Dual Video Players with Hardware-Accelerated Crossfade */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#3a3226] via-[#15120d] to-[#2b2415] overflow-hidden">
@@ -196,6 +303,7 @@ export const ContinuousCinematicHero: React.FC = () => {
         <video
           ref={videoRefA}
           poster="/media/images/residential-avenue.jpg"
+          autoPlay
           muted
           playsInline
           preload="auto"
@@ -208,6 +316,7 @@ export const ContinuousCinematicHero: React.FC = () => {
         <video
           ref={videoRefB}
           poster="/media/images/villa-facade.jpg"
+          autoPlay
           muted
           playsInline
           preload="auto"
@@ -221,81 +330,99 @@ export const ContinuousCinematicHero: React.FC = () => {
           className="absolute inset-0 pointer-events-none z-2"
           style={{
             background:
-              "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 25%, transparent 50%, rgba(0,0,0,0.25) 100%)",
+              "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 30%, transparent 55%, rgba(0,0,0,0.3) 100%)",
           }}
         />
       </div>
 
-      {/* Top Floating Badges (Play button completely removed as requested) */}
-      <div className="absolute top-[68px] sm:top-[85px] left-[4vw] sm:left-[5vw] right-[4vw] sm:right-[5vw] z-10 flex items-center justify-between pointer-events-auto">
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-serif tracking-wider text-gold shadow-sm">
-          <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold" />
-          <span>{PROJECT_CONFIG.brand.blessing}</span>
+      {/* Top Floating Badges */}
+      <div className="absolute top-[64px] sm:top-[85px] left-[3.5vw] sm:left-[5vw] right-[3.5vw] sm:right-[5vw] z-10 flex items-center justify-between pointer-events-auto">
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-[10px] sm:text-xs font-serif tracking-wider text-gold shadow-sm">
+          <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold shrink-0" />
+          <span className="truncate">{PROJECT_CONFIG.brand.blessing}</span>
         </div>
       </div>
 
-      {/* Hero Action Buttons Stage */}
-      <div className="relative z-10 px-[4vw] sm:px-[5vw] pb-[88px] sm:pb-[105px] md:pb-[115px]">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <a href="#about" className="btn fill shadow-lg backdrop-blur-sm text-xs sm:text-sm px-4 sm:px-7 py-2.5 sm:py-3.5">
-            Explore the Project
+      {/* Unified Bottom Controls Overlay (Zero overlap, mobile-first responsive layout) */}
+      <div className="relative z-10 w-full max-w-full min-w-0 px-[3.5vw] sm:px-[5vw] pb-[max(14px,env(safe-area-inset-bottom))] flex flex-col gap-2.5 sm:gap-3.5 pointer-events-none">
+        
+        {/* Action Buttons Row */}
+        <div className="grid grid-cols-3 gap-2 pointer-events-auto w-full max-w-full min-w-0 sm:flex sm:w-auto">
+          <a
+            href="#about"
+            className="inline-flex items-center justify-center px-2 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-gold hover:bg-gold-hover text-stone-950 font-serif font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider transition-all shadow-lg text-center truncate"
+          >
+            <span className="sm:hidden">Explore</span>
+            <span className="hidden sm:inline">Explore Project</span>
           </a>
-          <a href="#plans" className="btn bg-black/40 backdrop-blur-md border-white/40 hover:border-gold text-white shadow-lg text-xs sm:text-sm px-3.5 sm:px-6 py-2.5 sm:py-3.5">
-            Floor Plans
+          <a
+            href="#plans"
+            className="inline-flex items-center justify-center px-2 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-stone-950/60 backdrop-blur-md border border-white/30 hover:border-gold hover:text-gold text-white font-serif font-medium text-[11px] sm:text-xs md:text-sm uppercase tracking-wider transition-all shadow-lg text-center truncate"
+          >
+            <span className="sm:hidden">Plans</span>
+            <span className="hidden sm:inline">Floor Plans</span>
           </a>
-          <a href="#enquire" className="btn bg-black/40 backdrop-blur-md border-white/40 hover:border-gold text-white shadow-lg text-xs sm:text-sm px-3.5 sm:px-6 py-2.5 sm:py-3.5">
+          <a
+            href="#enquire"
+            className="inline-flex items-center justify-center px-2 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-stone-950/60 backdrop-blur-md border border-white/30 hover:border-gold hover:text-gold text-white font-serif font-medium text-[11px] sm:text-xs md:text-sm uppercase tracking-wider transition-all shadow-lg text-center truncate"
+          >
             Enquire
           </a>
         </div>
-      </div>
 
-      {/* Bottom Interactive Chapter Navigation Dock: Horizontal snap-swipe on mobile, 6-col grid on desktop */}
-      <div className="absolute left-[3vw] sm:left-[5vw] right-[3vw] sm:right-[5vw] bottom-[14px] sm:bottom-[22px] z-20 pointer-events-auto">
-        <div className="flex md:grid md:grid-cols-6 gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1 px-1">
-          {FILM_SCENES.map((scene, idx) => {
-            const isActive = currentSceneIdx === idx;
-            return (
-              <div
-                key={scene.id}
-                role="button"
-                tabIndex={0}
-                onMouseEnter={() => {
-                  if (currentSceneIdx !== idx) transitionToScene(idx);
-                }}
-                onClick={() => {
-                  if (currentSceneIdx !== idx) transitionToScene(idx);
-                }}
-                aria-label={`Jump to ${scene.label}`}
-                className={`group relative rounded-[12px] p-2 sm:p-2.5 md:p-3 cursor-pointer backdrop-blur-xl transition-all duration-200 border text-left shadow-lg will-change-transform shrink-0 snap-start w-[138px] sm:w-[155px] md:w-auto ${
-                  isActive
-                    ? "bg-stone-950/90 border-gold shadow-[0_4px_20px_0_rgba(169,139,79,0.3)]"
-                    : "bg-stone-950/45 border-white/[0.12] hover:border-gold/60 hover:bg-stone-950/70"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] font-mono tracking-wider uppercase text-gold font-semibold">
-                    {scene.tag}
-                  </span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-gold animate-ping" />}
-                </div>
+        {/* Interactive Chapter Dock: Horizontal swipe on mobile, 6-col grid on desktop */}
+        <div className="w-full max-w-full min-w-0 pointer-events-auto">
+          <div className="flex md:grid md:grid-cols-6 gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory py-1 px-0.5">
+            {FILM_SCENES.map((scene, idx) => {
+              const isActive = currentSceneIdx === idx;
+              return (
+                <div
+                  key={scene.id}
+                  ref={(el) => {
+                    cardRefs.current[idx] = el;
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onMouseEnter={() => {
+                    if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
+                      if (currentSceneIdx !== idx) transitionToScene(idx);
+                    }
+                  }}
+                  onClick={() => {
+                    if (currentSceneIdx !== idx) transitionToScene(idx);
+                  }}
+                  aria-label={`Jump to ${scene.label}`}
+                  className={`group relative rounded-[12px] p-2 sm:p-2.5 md:p-3 cursor-pointer backdrop-blur-xl transition-all duration-200 border text-left shadow-lg will-change-transform shrink-0 snap-start w-[130px] sm:w-[150px] md:w-auto ${
+                    isActive
+                      ? "bg-stone-950/90 border-gold shadow-[0_4px_20px_0_rgba(169,139,79,0.3)]"
+                      : "bg-stone-950/50 border-white/[0.12] hover:border-gold/60 hover:bg-stone-950/70"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[9px] font-mono tracking-wider uppercase text-gold font-semibold truncate">
+                      {scene.tag}
+                    </span>
+                    {isActive && <span className="w-1.5 h-1.5 rounded-full bg-gold animate-ping shrink-0" />}
+                  </div>
 
-                <div className="text-[11px] sm:text-[12px] font-serif text-white truncate font-medium group-hover:text-gold transition-colors">
-                  {scene.label}
-                </div>
+                  <div className="text-[11px] sm:text-[12px] font-serif text-white truncate font-medium group-hover:text-gold transition-colors">
+                    {scene.label}
+                  </div>
 
-                {/* Hardware-accelerated progress bar inside card */}
-                <div className="w-full h-[2px] bg-white/20 mt-1.5 rounded-full overflow-hidden">
-                  <div
-                    ref={(el) => {
-                      barRefs.current[idx] = el;
-                    }}
-                    className="h-full bg-gold transition-all duration-75"
-                    style={{ width: "0%" }}
-                  />
+                  {/* Hardware-accelerated progress bar inside card */}
+                  <div className="w-full h-[2px] bg-white/20 mt-1.5 rounded-full overflow-hidden">
+                    <div
+                      ref={(el) => {
+                        barRefs.current[idx] = el;
+                      }}
+                      className="h-full bg-gold transition-all duration-75"
+                      style={{ width: "0%" }}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
