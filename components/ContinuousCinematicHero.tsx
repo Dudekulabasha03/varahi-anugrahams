@@ -110,14 +110,17 @@ export const ContinuousCinematicHero: React.FC = () => {
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Time tracker for fallback mobile progression
-  const sceneStartTimeRef = useRef<number>(Date.now());
+  // Guard to prevent 60fps duplicate transition triggers during async video loading
+  const isTransitioningRef = useRef<boolean>(false);
 
   const currentScene = FILM_SCENES[currentSceneIdx];
 
-  // Transition to a specific scene index with smooth cross-fade
+  // Transition to a specific scene index with smooth cross-fade & instant prebuffering
   const transitionToScene = useCallback(
-    (nextIdx: number) => {
+    (nextIdx: number, isManual: boolean = false) => {
+      if (!isManual && isTransitioningRef.current) return;
+      isTransitioningRef.current = true;
+
       const targetScene = FILM_SCENES[nextIdx];
       const nextPlayer = activePlayer === "A" ? "B" : "A";
       const nextVideo = nextPlayer === "A" ? videoRefA.current : videoRefB.current;
@@ -151,19 +154,34 @@ export const ContinuousCinematicHero: React.FC = () => {
               .then(() => {
                 setActivePlayer(nextPlayer);
                 setCurrentSceneIdx(nextIdx);
+                isTransitioningRef.current = false;
 
-                // Pause the previous video after the 600ms crossfade to free decoding & network bandwidth
+                // After cross-fade finishes, pause previous video and prebuffer the subsequent scene
                 setTimeout(() => {
-                  if (prevVideo) prevVideo.pause();
-                }, 600);
+                  if (prevVideo) {
+                    prevVideo.pause();
+                    const followingIdx = (nextIdx + 1) % FILM_SCENES.length;
+                    const followingScene = FILM_SCENES[followingIdx];
+                    if (!prevVideo.src.includes(followingScene.src)) {
+                      ensureVideoAttrs(prevVideo);
+                      prevVideo.src = followingScene.src;
+                      prevVideo.preload = "auto";
+                      try {
+                        prevVideo.currentTime = followingScene.startTime || 0;
+                      } catch (_) {}
+                    }
+                  }
+                }, 650);
               })
               .catch(() => {
                 setActivePlayer(nextPlayer);
                 setCurrentSceneIdx(nextIdx);
+                isTransitioningRef.current = false;
               });
           } else {
             setActivePlayer(nextPlayer);
             setCurrentSceneIdx(nextIdx);
+            isTransitioningRef.current = false;
           }
         };
 
@@ -174,6 +192,7 @@ export const ContinuousCinematicHero: React.FC = () => {
         }
       } else {
         setCurrentSceneIdx(nextIdx);
+        isTransitioningRef.current = false;
       }
     },
     [activePlayer]
@@ -192,7 +211,7 @@ export const ContinuousCinematicHero: React.FC = () => {
       const activeVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
       const dur = currentScene.duration;
 
-      if (activeVideo && !isNaN(activeVideo.currentTime)) {
+      if (activeVideo && !isNaN(activeVideo.currentTime) && !isTransitioningRef.current) {
         const startOffset = currentScene.startTime || 0;
         const elapsed = Math.max(0, activeVideo.currentTime - startOffset);
         const p = Math.min(1, Math.max(0, elapsed / dur));
@@ -205,7 +224,7 @@ export const ContinuousCinematicHero: React.FC = () => {
 
         if (elapsed >= dur) {
           const nextIdx = (currentSceneIdx + 1) % FILM_SCENES.length;
-          transitionToScene(nextIdx);
+          transitionToScene(nextIdx, false);
           return;
         }
       }
@@ -228,6 +247,16 @@ export const ContinuousCinematicHero: React.FC = () => {
       if (p !== undefined) {
         p.catch(() => {});
       }
+    }
+
+    // Prebuffer Scene 1 on Player B so transition is 100% instantaneous
+    if (videoRefB.current) {
+      ensureVideoAttrs(videoRefB.current);
+      videoRefB.current.src = FILM_SCENES[1].src;
+      videoRefB.current.preload = "auto";
+      try {
+        videoRefB.current.currentTime = FILM_SCENES[1].startTime || 0;
+      } catch (_) {}
     }
 
     // Global touch/click unlock for mobile browsers
@@ -270,7 +299,7 @@ export const ContinuousCinematicHero: React.FC = () => {
           autoPlay
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           className={`absolute inset-0 w-full h-full object-cover block transition-opacity duration-700 ease-in-out ${
             activePlayer === "A" ? "opacity-100 z-1" : "opacity-0 z-0 pointer-events-none"
           }`}
@@ -282,7 +311,7 @@ export const ContinuousCinematicHero: React.FC = () => {
           poster="/media/images/villa-facade.jpg"
           muted
           playsInline
-          preload="metadata"
+          preload="auto"
           className={`absolute inset-0 w-full h-full object-cover block transition-opacity duration-700 ease-in-out ${
             activePlayer === "B" ? "opacity-100 z-1" : "opacity-0 z-0 pointer-events-none"
           }`}
@@ -348,11 +377,11 @@ export const ContinuousCinematicHero: React.FC = () => {
                   tabIndex={0}
                   onMouseEnter={() => {
                     if (typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches) {
-                      if (currentSceneIdx !== idx) transitionToScene(idx);
+                      if (currentSceneIdx !== idx) transitionToScene(idx, true);
                     }
                   }}
                   onClick={() => {
-                    if (currentSceneIdx !== idx) transitionToScene(idx);
+                    if (currentSceneIdx !== idx) transitionToScene(idx, true);
                   }}
                   aria-label={`Jump to ${scene.label}`}
                   className={`group relative rounded-[12px] p-2 sm:p-2.5 md:p-3 cursor-pointer backdrop-blur-xl transition-all duration-200 border text-left shadow-lg will-change-transform shrink-0 snap-start w-[130px] sm:w-[150px] md:w-auto ${
