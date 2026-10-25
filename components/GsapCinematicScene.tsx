@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Play, Pause, RotateCcw, Sparkles } from "lucide-react";
+import { Play, Pause, RotateCcw } from "lucide-react";
 
 const BEATS = [
   {
@@ -53,28 +53,6 @@ export const GsapCinematicScene: React.FC = () => {
   const [activeBeat, setActiveBeat] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
-
-  // Jump smoothly to a specific phase
-  const jumpToPhase = useCallback((beatIdx: number) => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    ensureVideoMuted(video);
-    const targetBeat = BEATS[beatIdx];
-    if (targetBeat) {
-      try {
-        video.currentTime = targetBeat.time;
-      } catch (_) {}
-      setActiveBeat(beatIdx);
-      if (progressBarRef.current && video.duration) {
-        progressBarRef.current.style.width = `${(targetBeat.time / video.duration) * 100}%`;
-      }
-      video
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
-    }
-  }, []);
 
   // Toggle play/pause for mobile users who want to watch the building assemble automatically
   const togglePlay = useCallback(() => {
@@ -293,65 +271,35 @@ export const GsapCinematicScene: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent pointer-events-none" />
       </div>
 
-      {/* Top Floating Glass Header: Phase Badges & Play Control */}
-      <div className="absolute top-[68px] sm:top-[85px] inset-x-[4vw] sm:inset-x-[5vw] z-20 flex items-center justify-between gap-2 pointer-events-auto">
-        
-        {/* Phase Navigation Pills (Tappable on mobile & desktop) */}
-        <div className="flex items-center gap-1.5 sm:gap-2 p-1 rounded-full bg-black/60 backdrop-blur-xl border border-white/15 shadow-xl overflow-x-auto no-scrollbar max-w-full">
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-gold border-r border-white/10">
-            <Sparkles className="w-3 h-3 text-gold" />
-            <span>Assembly</span>
-          </div>
-          {BEATS.map((b, idx) => {
-            const isCurrent = activeBeat === idx;
-            return (
-              <button
-                key={b.phase}
-                type="button"
-                onClick={() => jumpToPhase(idx)}
-                className={`px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap ${
-                  isCurrent
-                    ? "bg-gold text-stone-950 font-bold shadow-md shadow-gold/30"
-                    : "text-stone-300 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                <span className="font-semibold">{b.phase}</span>
-                <span className="ml-1 text-[9px] sm:text-[11px] opacity-90">{b.shortLabel}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Top Floating Controls: Play / Pause & Replay */}
+      <div className="absolute top-[68px] sm:top-[85px] right-[4vw] sm:right-[5vw] z-20 flex items-center gap-1.5 pointer-events-auto">
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={isPlaying ? "Pause Assembly Animation" : "Play Assembly Animation"}
+          className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-black/60 hover:bg-stone-900/80 backdrop-blur-xl border border-white/20 text-white hover:border-gold text-[10px] sm:text-xs font-mono uppercase tracking-wider transition-all shadow-xl"
+        >
+          {isPlaying ? (
+            <>
+              <Pause className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold fill-gold" />
+              <span className="hidden xs:inline">Pause</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold fill-gold" />
+              <span>Play</span>
+            </>
+          )}
+        </button>
 
-        {/* Floating Play / Pause / Replay Controls */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            type="button"
-            onClick={togglePlay}
-            aria-label={isPlaying ? "Pause Assembly Animation" : "Play Assembly Animation"}
-            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-black/60 hover:bg-stone-900/80 backdrop-blur-xl border border-white/20 text-white hover:border-gold text-[10px] sm:text-xs font-mono uppercase tracking-wider transition-all shadow-xl"
-          >
-            {isPlaying ? (
-              <>
-                <Pause className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold fill-gold" />
-                <span className="hidden xs:inline">Pause</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-gold fill-gold" />
-                <span>Play</span>
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={replaySequence}
-            aria-label="Replay Assembly Sequence"
-            className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 hover:bg-stone-900/80 backdrop-blur-xl border border-white/20 text-stone-300 hover:text-gold hover:border-gold flex items-center justify-center transition-all shadow-xl"
-          >
-            <RotateCcw className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={replaySequence}
+          aria-label="Replay Assembly Sequence"
+          className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 hover:bg-stone-900/80 backdrop-blur-xl border border-white/20 text-stone-300 hover:text-gold hover:border-gold flex items-center justify-center transition-all shadow-xl"
+        >
+          <RotateCcw className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+        </button>
       </div>
 
       {/* Storytelling Narrative Beat (Single keyed container for zero text overlap) */}
