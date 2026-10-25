@@ -21,7 +21,7 @@ const FILM_SCENES: FilmScene[] = [
     id: "arrival",
     tag: "01 · Arrival",
     label: "Descent & Enclave",
-    duration: 6.0, // Zooming into residential complex - 6.0s (skips last 1 sec)
+    duration: 5.0, // Zooming into residential complex - 5.0s (skips last 2 seconds)
     startTime: 0,
     src: "/media/videos/hero-arrival.mp4",
     poster: "/media/images/residential-avenue.jpg",
@@ -106,25 +106,31 @@ export const ContinuousCinematicHero: React.FC = () => {
   const videoRefB = useRef<HTMLVideoElement>(null);
   const [activePlayer, setActivePlayer] = useState<"A" | "B">("A");
 
+  // Synchronized refs to eliminate race conditions and stale closure issues in rAF
+  const activePlayerRef = useRef<"A" | "B">("A");
+  const currentSceneIdxRef = useRef<number>(0);
+  const sceneStartTimeRef = useRef<number>(performance.now());
+  const isTransitioningRef = useRef<boolean>(false);
+
   // Direct DOM references for progress bars & cards to prevent React re-renders per frame
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Guard to prevent 60fps duplicate transition triggers during async video loading
-  const isTransitioningRef = useRef<boolean>(false);
-
-  const currentScene = FILM_SCENES[currentSceneIdx];
-
-  // Transition to a specific scene index with smooth cross-fade & instant prebuffering
+  // Transition to a specific scene index with smooth cross-fade & background prebuffering
   const transitionToScene = useCallback(
     (nextIdx: number, isManual: boolean = false) => {
       if (!isManual && isTransitioningRef.current) return;
       isTransitioningRef.current = true;
 
       const targetScene = FILM_SCENES[nextIdx];
-      const nextPlayer = activePlayer === "A" ? "B" : "A";
+      const nextPlayer = activePlayerRef.current === "A" ? "B" : "A";
       const nextVideo = nextPlayer === "A" ? videoRefA.current : videoRefB.current;
-      const prevVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
+      const prevVideo = activePlayerRef.current === "A" ? videoRefA.current : videoRefB.current;
+
+      // Update refs immediately
+      activePlayerRef.current = nextPlayer;
+      currentSceneIdxRef.current = nextIdx;
+      sceneStartTimeRef.current = performance.now();
 
       // Reset inactive progress bars directly in DOM
       barRefs.current.forEach((bar, idx) => {
@@ -142,63 +148,42 @@ export const ContinuousCinematicHero: React.FC = () => {
         }
 
         const startOffset = targetScene.startTime || 0;
-        const startPlayback = () => {
-          ensureVideoAttrs(nextVideo);
-          try {
-            nextVideo.currentTime = startOffset;
-          } catch (_) {}
+        try {
+          nextVideo.currentTime = startOffset;
+        } catch (_) {}
 
-          const playPromise = nextVideo.play();
-          if (playPromise !== undefined) {
-            playPromise
-              .then(() => {
-                setActivePlayer(nextPlayer);
-                setCurrentSceneIdx(nextIdx);
-                isTransitioningRef.current = false;
-
-                // After cross-fade finishes, pause previous video and prebuffer the subsequent scene
-                setTimeout(() => {
-                  if (prevVideo) {
-                    prevVideo.pause();
-                    const followingIdx = (nextIdx + 1) % FILM_SCENES.length;
-                    const followingScene = FILM_SCENES[followingIdx];
-                    if (!prevVideo.src.includes(followingScene.src)) {
-                      ensureVideoAttrs(prevVideo);
-                      prevVideo.src = followingScene.src;
-                      prevVideo.preload = "auto";
-                      try {
-                        prevVideo.currentTime = followingScene.startTime || 0;
-                      } catch (_) {}
-                    }
-                  }
-                }, 650);
-              })
-              .catch(() => {
-                setActivePlayer(nextPlayer);
-                setCurrentSceneIdx(nextIdx);
-                isTransitioningRef.current = false;
-              });
-          } else {
-            setActivePlayer(nextPlayer);
-            setCurrentSceneIdx(nextIdx);
-            isTransitioningRef.current = false;
-          }
-        };
-
-        if (startOffset > 0 && nextVideo.readyState < 1) {
-          nextVideo.addEventListener("loadedmetadata", startPlayback, { once: true });
-        } else {
-          startPlayback();
+        const playPromise = nextVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
         }
-      } else {
-        setCurrentSceneIdx(nextIdx);
-        isTransitioningRef.current = false;
       }
+
+      // Update React state for UI indicators
+      setActivePlayer(nextPlayer);
+      setCurrentSceneIdx(nextIdx);
+
+      // After 500ms crossfade, pause previous video, prebuffer subsequent scene, and release lock
+      setTimeout(() => {
+        if (prevVideo) {
+          prevVideo.pause();
+          const followingIdx = (nextIdx + 1) % FILM_SCENES.length;
+          const followingScene = FILM_SCENES[followingIdx];
+          if (!prevVideo.src.includes(followingScene.src)) {
+            ensureVideoAttrs(prevVideo);
+            prevVideo.src = followingScene.src;
+            prevVideo.preload = "auto";
+            try {
+              prevVideo.currentTime = followingScene.startTime || 0;
+            } catch (_) {}
+          }
+        }
+        isTransitioningRef.current = false;
+      }, 500);
     },
-    [activePlayer]
+    []
   );
 
-  // Automatic timed progression across scenes — strictly driven by video playback
+  // Automatic timed progression across scenes — hybrid video + wall clock for guaranteed progression
   useEffect(() => {
     let animationFrameId: number;
 
@@ -208,25 +193,37 @@ export const ContinuousCinematicHero: React.FC = () => {
         return;
       }
 
-      const activeVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
-      const dur = currentScene.duration;
+      const idx = currentSceneIdxRef.current;
+      const scene = FILM_SCENES[idx];
+      const dur = scene.duration;
+      const activeVideo = activePlayerRef.current === "A" ? videoRefA.current : videoRefB.current;
 
-      if (activeVideo && !isNaN(activeVideo.currentTime) && !isTransitioningRef.current) {
-        const startOffset = currentScene.startTime || 0;
-        const elapsed = Math.max(0, activeVideo.currentTime - startOffset);
+      const now = performance.now();
+      const elapsedWall = Math.max(0, (now - sceneStartTimeRef.current) / 1000);
+
+      let elapsed = elapsedWall;
+      if (activeVideo && !activeVideo.paused && !isNaN(activeVideo.currentTime) && activeVideo.currentTime > 0) {
+        const startOffset = scene.startTime || 0;
+        const elapsedVideo = Math.max(0, activeVideo.currentTime - startOffset);
+        // Blend clocks: accurately follow video frames while ensuring wall clock guarantees progression
+        elapsed = Math.max(elapsedVideo, elapsedWall * 0.9);
+      } else if (activeVideo && activeVideo.paused) {
+        // Kickstart playback if browser paused
+        ensureVideoAttrs(activeVideo);
+        activeVideo.play().catch(() => {});
+      }
+
+      // Direct hardware-accelerated style update
+      const activeBar = barRefs.current[idx];
+      if (activeBar) {
         const p = Math.min(1, Math.max(0, elapsed / dur));
+        activeBar.style.width = `${p * 100}%`;
+      }
 
-        // Direct hardware-accelerated style update
-        const activeBar = barRefs.current[currentSceneIdx];
-        if (activeBar) {
-          activeBar.style.width = `${p * 100}%`;
-        }
-
-        if (elapsed >= dur) {
-          const nextIdx = (currentSceneIdx + 1) % FILM_SCENES.length;
-          transitionToScene(nextIdx, false);
-          return;
-        }
+      // Time to advance!
+      if (elapsed >= dur && !isTransitioningRef.current) {
+        const nextIdx = (idx + 1) % FILM_SCENES.length;
+        transitionToScene(nextIdx, false);
       }
 
       animationFrameId = requestAnimationFrame(checkProgress);
@@ -234,7 +231,7 @@ export const ContinuousCinematicHero: React.FC = () => {
 
     animationFrameId = requestAnimationFrame(checkProgress);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [currentSceneIdx, activePlayer, isPlaying, currentScene.duration, currentScene.startTime, transitionToScene]);
+  }, [isPlaying, transitionToScene]);
 
   // Initial playback mount
   useEffect(() => {
@@ -260,22 +257,29 @@ export const ContinuousCinematicHero: React.FC = () => {
     }
 
     // Global touch/click unlock for mobile browsers
-    const unlockMobileVideo = () => {
-      const activeVideo = activePlayer === "A" ? videoRefA.current : videoRefB.current;
-      if (activeVideo && activeVideo.paused) {
-        ensureVideoAttrs(activeVideo);
-        activeVideo.play().catch(() => {});
+    const unlockMobileVideos = () => {
+      if (videoRefA.current) {
+        ensureVideoAttrs(videoRefA.current);
+        if (activePlayerRef.current === "A" && videoRefA.current.paused) {
+          videoRefA.current.play().catch(() => {});
+        }
+      }
+      if (videoRefB.current) {
+        ensureVideoAttrs(videoRefB.current);
+        if (activePlayerRef.current === "B" && videoRefB.current.paused) {
+          videoRefB.current.play().catch(() => {});
+        }
       }
     };
 
-    window.addEventListener("touchstart", unlockMobileVideo, { once: true, passive: true });
-    window.addEventListener("click", unlockMobileVideo, { once: true, passive: true });
+    window.addEventListener("touchstart", unlockMobileVideos, { once: true, passive: true });
+    window.addEventListener("click", unlockMobileVideos, { once: true, passive: true });
 
     return () => {
-      window.removeEventListener("touchstart", unlockMobileVideo);
-      window.removeEventListener("click", unlockMobileVideo);
+      window.removeEventListener("touchstart", unlockMobileVideos);
+      window.removeEventListener("click", unlockMobileVideos);
     };
-  }, [activePlayer]);
+  }, []);
 
   // Auto-scroll active chapter card into view horizontally on mobile
   useEffect(() => {
@@ -309,6 +313,7 @@ export const ContinuousCinematicHero: React.FC = () => {
         <video
           ref={videoRefB}
           poster="/media/images/villa-facade.jpg"
+          autoPlay
           muted
           playsInline
           preload="auto"
