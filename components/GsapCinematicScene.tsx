@@ -195,48 +195,74 @@ export const GsapCinematicScene: React.FC = () => {
 
     video.addEventListener("timeupdate", onTimeUpdate);
 
-    // ScrollTrigger Pinned Assembly Sequence with comfortable mobile scroll length
-    const isMobile = window.innerWidth < 768;
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
-        trigger: container,
-        start: "top top",
-        end: isMobile ? "+=180%" : "+=140%", // Comfortable scroll distance on touch devices
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1,
-        scrub: isMobile ? 0.4 : 0.2, // Smoother scrub on mobile
-        onUpdate: (self) => {
-          const p = self.progress;
+    // ScrollTrigger Pinned Assembly Sequence on Desktop vs Fluid Non-Pinning Autoplay on Mobile
+    const isMobile = window.innerWidth < 1024;
+    let ctx: gsap.Context | null = null;
+    let observer: IntersectionObserver | null = null;
 
-          // Only scrub if user is actively scrolling (not in manual play mode)
-          if (video.paused && video.duration && !isNaN(video.duration)) {
-            safeSeek(p * video.duration);
-          }
-
-          // Update progress bar
-          if (bar) {
-            bar.style.width = `${p * 100}%`;
-          }
-
-          // Fade out the progress bar when nearing the transition to the next section
-          if (barWrapper) {
-            barWrapper.style.opacity = p > 0.9 ? `${Math.max(0, (1 - p) / 0.1)}` : "1";
-          }
-
-          // Update active beat with a clean exit before unpinning
-          if (p < 0.32) {
-            setActiveBeat(0);
-          } else if (p < 0.66) {
-            setActiveBeat(1);
-          } else if (p < 0.90) {
-            setActiveBeat(2);
-          } else {
-            setActiveBeat(-1);
-          }
+    if (isMobile) {
+      // Mobile (Android, iPhone): NEVER pin touch scroll. Autoplay video smoothly on scroll into view.
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              ensureVideoMuted(video);
+              video
+                .play()
+                .then(() => setIsPlaying(true))
+                .catch(() => {});
+            } else {
+              video.pause();
+              setIsPlaying(false);
+            }
+          });
         },
-      });
-    }, container);
+        { threshold: 0.2 }
+      );
+      observer.observe(container);
+    } else {
+      // Desktop: Pinned forward/reverse video scrub synced with Lenis smooth scroll
+      ctx = gsap.context(() => {
+        ScrollTrigger.create({
+          trigger: container,
+          start: "top top",
+          end: "+=130%",
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+          scrub: 0.25,
+          onUpdate: (self) => {
+            const p = self.progress;
+
+            // Only scrub if user is actively scrolling (not in manual play mode)
+            if (video.paused && video.duration && !isNaN(video.duration)) {
+              safeSeek(p * video.duration);
+            }
+
+            // Update progress bar
+            if (bar) {
+              bar.style.width = `${p * 100}%`;
+            }
+
+            // Fade out the progress bar when nearing the transition to the next section
+            if (barWrapper) {
+              barWrapper.style.opacity = p > 0.9 ? `${Math.max(0, (1 - p) / 0.1)}` : "1";
+            }
+
+            // Update active beat with a clean exit before unpinning
+            if (p < 0.32) {
+              setActiveBeat(0);
+            } else if (p < 0.66) {
+              setActiveBeat(1);
+            } else if (p < 0.90) {
+              setActiveBeat(2);
+            } else {
+              setActiveBeat(-1);
+            }
+          },
+        });
+      }, container);
+    }
 
     return () => {
       video.removeEventListener("loadedmetadata", onMetadata);
@@ -244,7 +270,8 @@ export const GsapCinematicScene: React.FC = () => {
       video.removeEventListener("timeupdate", onTimeUpdate);
       window.removeEventListener("touchstart", primeDecoder);
       window.removeEventListener("click", primeDecoder);
-      ctx.revert();
+      if (observer) observer.disconnect();
+      if (ctx) ctx.revert();
     };
   }, [isPlaying]);
 

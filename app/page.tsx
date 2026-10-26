@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { SmoothScrollProvider } from "@/components/ui/SmoothScrollProvider";
 import { ReferenceStyleNav } from "@/components/ReferenceStyleNav";
 import { ContinuousCinematicHero } from "@/components/ContinuousCinematicHero";
 import { ReferenceStyleIntro } from "@/components/ReferenceStyleIntro";
@@ -11,16 +12,32 @@ import { LuxuryCursor } from "@/components/ui/LuxuryCursor";
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen bg-bg text-ink overflow-x-hidden selection:bg-gold selection:text-white">
-      {/* 1. Interactive Magnetic Cursor: "PLAY" over video stages, "ZOOM" over photos */}
-      <LuxuryCursor />
+    <SmoothScrollProvider>
+      <div className="relative min-h-screen bg-bg text-ink overflow-x-hidden selection:bg-gold selection:text-white">
+        {/* 1. Interactive Magnetic Cursor: "PLAY" over video stages, "ZOOM" over photos */}
+        <LuxuryCursor />
 
-      {/* Ambient Lighting Orbs (ReactBits style - GPU accelerated) */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transform-gpu will-change-transform">
-        <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-br from-[#cda260]/10 via-[#cda260]/5 to-transparent blur-[120px] transform-gpu" />
-        <div className="absolute top-[40%] right-[-15%] w-[55vw] h-[55vw] rounded-full bg-gradient-to-bl from-[#9c783e]/10 via-[#664b22]/5 to-transparent blur-[130px] transform-gpu" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-tr from-[#cda260]/8 via-[#856128]/5 to-transparent blur-[120px] transform-gpu" />
-      </div>
+        {/* Ambient Lighting Orbs (Zero-blur CSS radial gradients for ultra-fast 120fps scrolling on mobile & desktop) */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div
+            className="absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] pointer-events-none"
+            style={{
+              background: "radial-gradient(circle at center, rgba(205, 162, 96, 0.08) 0%, rgba(205, 162, 96, 0.02) 40%, transparent 70%)",
+            }}
+          />
+          <div
+            className="absolute top-[40%] right-[-15%] w-[65vw] h-[65vw] pointer-events-none"
+            style={{
+              background: "radial-gradient(circle at center, rgba(156, 120, 62, 0.07) 0%, rgba(102, 75, 34, 0.02) 40%, transparent 70%)",
+            }}
+          />
+          <div
+            className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] pointer-events-none"
+            style={{
+              background: "radial-gradient(circle at center, rgba(205, 162, 96, 0.06) 0%, rgba(133, 97, 40, 0.02) 40%, transparent 70%)",
+            }}
+          />
+        </div>
 
       {/* 2. Fixed Luxury Navigation Bar */}
       <ReferenceStyleNav />
@@ -43,5 +60,6 @@ export default function HomePage() {
       {/* 7. Masonry Photo Gallery, Accordion FAQ, Enquire Form, and Footer */}
       <ReferenceStyleBottomSections />
     </div>
+  </SmoothScrollProvider>
   );
 }
