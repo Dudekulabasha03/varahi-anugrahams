@@ -229,7 +229,6 @@ export const GsapCinematicScene: React.FC = () => {
           end: "+=130%",
           pin: true,
           pinSpacing: true,
-          anticipatePin: 1,
           scrub: 0.25,
           onUpdate: (self) => {
             const p = self.progress;

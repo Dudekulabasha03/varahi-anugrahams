@@ -112,9 +112,10 @@ export const ContinuousCinematicHero: React.FC = () => {
   const sceneStartTimeRef = useRef<number>(performance.now());
   const isTransitioningRef = useRef<boolean>(false);
 
-  // Direct DOM references for progress bars & cards to prevent React re-renders per frame
+  // Direct DOM references for progress bars, cards, and horizontal dock
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const dockRef = useRef<HTMLDivElement>(null);
 
   // Transition to a specific scene index with smooth cross-fade & background prebuffering
   const transitionToScene = useCallback(
@@ -281,11 +282,21 @@ export const ContinuousCinematicHero: React.FC = () => {
     };
   }, []);
 
-  // Auto-scroll active chapter card into view horizontally on mobile
+  // Auto-scroll active card horizontally INSIDE the dock ONLY when hero is currently in view
+  // (NEVER call scrollIntoView which scrolls the entire window upwards!)
   useEffect(() => {
+    const dock = dockRef.current;
     const activeCard = cardRefs.current[currentSceneIdx];
-    if (activeCard && typeof window !== "undefined" && window.innerWidth < 768) {
-      activeCard.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+    if (dock && activeCard && typeof window !== "undefined" && window.innerWidth < 768) {
+      const hero = document.getElementById("top");
+      if (hero) {
+        const rect = hero.getBoundingClientRect();
+        // Only scroll the horizontal dock if the hero header is actually visible in the viewport
+        if (rect.bottom > 100) {
+          const targetLeft = activeCard.offsetLeft - dock.offsetWidth / 2 + activeCard.offsetWidth / 2;
+          dock.scrollTo({ left: targetLeft, behavior: "smooth" });
+        }
+      }
     }
   }, [currentSceneIdx]);
 
@@ -369,7 +380,10 @@ export const ContinuousCinematicHero: React.FC = () => {
 
         {/* Interactive Chapter Dock: Horizontal swipe on mobile, 6-col grid on desktop */}
         <div className="w-full max-w-full min-w-0 pointer-events-auto">
-          <div className="flex md:grid md:grid-cols-6 gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory py-1 px-0.5">
+          <div
+            ref={dockRef}
+            className="flex md:grid md:grid-cols-6 gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar snap-x snap-mandatory py-1 px-0.5"
+          >
             {FILM_SCENES.map((scene, idx) => {
               const isActive = currentSceneIdx === idx;
               return (
