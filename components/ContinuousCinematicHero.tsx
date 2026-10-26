@@ -65,23 +65,12 @@ const FILM_SCENES: FilmScene[] = [
     id: "interiors",
     tag: "05 · Interiors",
     label: "Living Pavilion",
-    duration: 51.5, // Experimental video (27s to till end @ 1.5x speed = ~51.5s total duration)
+    duration: 47.0, // High-quality duplicate-free video (27s to 97.5s @ 1.5x speed = ~47s total duration)
     startTime: 0,
     src: "/media/videos/interior-fpv.mp4",
     poster: "/media/images/villa-facade.jpg",
     headline: "Architecture of Light and Volume.",
     subtitle: "Double-height living spaces, fine dining lounge, and fluid contemporary flow.",
-  },
-  {
-    id: "terrace",
-    tag: "06 · Sky Terrace",
-    label: "Rooftop Garden",
-    startTime: 7.0, // Show only last 3 seconds of the 10s video directly on the terrace!
-    duration: 3.0,
-    src: "/media/videos/rooftop-space.mp4",
-    poster: "/media/images/villa-facade.jpg",
-    headline: "A Terrace Above It All.",
-    subtitle: "Private 23 × 30 ft rooftop sanctuary with pergola and evening lounge.",
   },
 ];
 

@@ -23,15 +23,12 @@ export const ReferenceStyleNav: React.FC = () => {
       >
         {/* Brand */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <a href="#top" className="flex items-center gap-1.5 sm:gap-2 group">
-            <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-gold animate-pulse shrink-0" />
-            <span className="font-serif text-[13px] sm:text-base md:text-lg tracking-[0.15em] sm:tracking-[0.25em] uppercase text-white font-semibold group-hover:text-gold transition-colors truncate">
+          <a href="#top" className="flex items-center gap-2 sm:gap-2.5 group">
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gold animate-pulse shrink-0 shadow-[0_0_12px_rgba(205,162,96,0.8)]" />
+            <span className="font-serif text-[16px] sm:text-[20px] md:text-[22px] tracking-[0.12em] sm:tracking-[0.18em] uppercase text-white font-extrabold group-hover:text-gold transition-colors truncate">
               VARAHI ANUGRAHAMS
             </span>
           </a>
-          <span className="hidden xl:inline-block text-[11px] font-mono text-stone-400 border-l border-white/20 pl-3 uppercase tracking-wider">
-            Tadipatri · Gated Luxury
-          </span>
         </div>
 
         {/* Center Nav Links */}
@@ -63,15 +60,8 @@ export const ReferenceStyleNav: React.FC = () => {
           </li>
         </ul>
 
-        {/* Right CTA / Mobile Toggle */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <a
-            href="#enquire"
-            className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-full bg-gold hover:bg-gold-hover text-black text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-wider transition-all shadow-md shadow-gold/20"
-          >
-            Enquire
-          </a>
-
+        {/* Right Controls / Mobile Toggle */}
+        <div className="flex items-center gap-2 shrink-0">
           {/* Mobile Menu Button */}
           <button
             type="button"

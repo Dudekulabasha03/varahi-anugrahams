@@ -44,7 +44,7 @@ export default function HomePage() {
 
       {/* 3. Continuous Multi-Video Cinematic Hero Session:
              Arrival (7s) -> Aerial Community (3s) -> 30 FT Avenue (3.5s) -> 
-             Villa Architecture (4.5s) -> Inside Interiors (3.8s) -> Rooftop Terrace (4s) */}
+             Villa Architecture (4.5s) -> Inside Interiors (51.5s Walkthrough) */}
       <ContinuousCinematicHero />
 
       {/* 4. Editorial Philosophy & Staggered Word Reveal */}
