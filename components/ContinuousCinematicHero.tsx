@@ -65,7 +65,7 @@ const FILM_SCENES: FilmScene[] = [
     id: "interiors",
     tag: "05 · Interiors",
     label: "Living Pavilion",
-    duration: 5.8, // Inside interiors video - 5.8s (added 2 sec more)
+    duration: 51.5, // Experimental video (27s to till end @ 1.5x speed = ~51.5s total duration)
     startTime: 0,
     src: "/media/videos/interior-fpv.mp4",
     poster: "/media/images/villa-facade.jpg",

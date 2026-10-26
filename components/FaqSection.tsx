@@ -10,14 +10,19 @@ interface FaqItem {
 
 const FAQS: FaqItem[] = [
   {
-    question: "Where is Varahi Anugrahams located?",
+    question: "Where is the project located?",
     answer:
-      "Varahi Anugrahams is situated along R.F. Road in Tadipatri (Pincode: 515411), Andhra Pradesh. The gated community enjoys immediate connectivity to primary transit routes, historic temples, and municipal facilities.",
+      "Varahi Anugrahams is situated at Nandalapadu Road Near Ananthapur Bridge Varahi Anugrahams, Tadipatri, Andhra Pradesh. Google Maps: https://www.google.com/maps?q=14.909390,77.984804 (Coordinates: 14.909390, 77.984804).",
   },
   {
     question: "What are the exact villa dimensions and plot sizes?",
     answer:
       "Each individual residence is constructed on an engineered 23 ft × 47 ft foundation footprint (~1,081 sq.ft plinth area) within an overall approx. 58′ × 30′ plot layout that accommodates the front car porch, garden, and setbacks across Ground + First Floor + Rooftop Sky Terrace.",
+  },
+  {
+    question: "When is the possession ?",
+    answer:
+      "Within 10 to 12 months from the date of registration.",
   },
   {
     question: "What are the pricing and payment terms?",

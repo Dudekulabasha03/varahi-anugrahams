@@ -404,9 +404,20 @@ export const ReferenceStyleBottomSections: React.FC = () => {
               <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
               <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
-            <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
-              Varahi Anugrahams is situated along R.F. Road, Tadipatri — 515411, Anantapur District, Andhra Pradesh.
-            </p>
+            <div className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4 space-y-3">
+              <p>
+                Nandalapadu Road Near Ananthapur Bridge Varahi Anugrahams, Tadipatri, Andhra Pradesh.
+              </p>
+              <a
+                href="https://www.google.com/maps?q=14.909390,77.984804"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold/15 text-gold border border-gold/40 hover:bg-gold hover:text-black font-sans text-xs sm:text-sm tracking-wider uppercase font-semibold transition-all duration-300 shadow-[0_2px_12px_rgba(205,162,96,0.15)] group/map"
+              >
+                <span>📍 View on Google Maps (14.909390, 77.984804)</span>
+                <span className="text-xs transition-transform duration-200 group-hover/map:translate-x-0.5 group-hover/map:-translate-y-0.5">↗</span>
+              </a>
+            </div>
           </details>
 
           <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
@@ -422,12 +433,12 @@ export const ReferenceStyleBottomSections: React.FC = () => {
 
           <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
             <summary className="font-serif font-medium text-[18px] sm:text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
-              <span>When is possession?</span>
+              <span>When is the possession ?</span>
               <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
               <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
             </summary>
             <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
-              Possession timelines and stage approvals are shared during your one-on-one private consultation.
+              Within 10 to 12 months from the date of registration.
             </p>
           </details>
 
