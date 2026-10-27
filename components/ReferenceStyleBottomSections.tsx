@@ -442,16 +442,7 @@ export const ReferenceStyleBottomSections: React.FC = () => {
             </p>
           </details>
 
-          <details className="group cursor-pointer rounded-[16px] sm:rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] hover:border-white/[0.18] p-4 sm:p-6 transition-all duration-300 shadow-[0_8px_32px_0_rgba(0,0,0,0.25)]">
-            <summary className="font-serif font-medium text-[18px] sm:text-[22px] md:text-[24px] text-stone-100 list-none flex justify-between items-center select-none cursor-pointer">
-              <span>Can I schedule a private site visit?</span>
-              <span className="text-gold text-[20px] sm:text-[24px] font-mono group-open:hidden transition-transform duration-300">+</span>
-              <span className="text-gold text-[20px] sm:text-[24px] font-mono hidden group-open:inline transition-transform duration-300">–</span>
-            </summary>
-            <p className="mt-3 sm:mt-[14px] text-stone-300 text-sm sm:text-[16px] font-light leading-relaxed border-t border-white/[0.06] pt-3 sm:pt-4">
-              Yes — submit the enquiry form below or message promoter Rangaiah Kotra directly on WhatsApp for an immediate walkthrough appointment.
-            </p>
-          </details>
+
         </div>
       </section>
 

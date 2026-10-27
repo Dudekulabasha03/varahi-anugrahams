@@ -25,7 +25,7 @@ export const ReferenceStyleNav: React.FC = () => {
         <div className="flex items-center gap-2 sm:gap-3">
           <a href="#top" className="flex items-center gap-2 sm:gap-2.5 group">
             <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gold animate-pulse shrink-0 shadow-[0_0_12px_rgba(205,162,96,0.8)]" />
-            <span className="font-serif text-[16px] sm:text-[20px] md:text-[22px] tracking-[0.12em] sm:tracking-[0.18em] uppercase text-white font-extrabold group-hover:text-gold transition-colors truncate">
+            <span className="font-serif text-[22px] sm:text-[24px] md:text-[25px] tracking-[0.12em] sm:tracking-[0.18em] uppercase text-white font-extrabold group-hover:text-gold transition-colors truncate">
               VARAHI ANUGRAHAMS
             </span>
           </a>
