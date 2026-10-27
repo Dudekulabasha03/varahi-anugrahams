@@ -205,13 +205,21 @@ export const ReferenceStyleBottomSections: React.FC = () => {
 
     if (Object.keys(newErrors).length === 0) {
       setSubmitted(true);
+      const targetUrl = `https://wa.me/919492854666?text=Hello%20Rangaiah%20garu,%20my%20name%20is%20${encodeURIComponent(
+        form.name.trim()
+      )}.%20Contact:%20${encodeURIComponent(form.contact.trim())}.%20Message:%20${encodeURIComponent(
+        form.msg.trim()
+      )}`;
+      if (typeof window !== "undefined") {
+        window.open(targetUrl, "_blank", "noopener,noreferrer");
+      }
     }
   };
 
   const whatsappUrl = `https://wa.me/919492854666?text=Hello%20Rangaiah%20garu,%20my%20name%20is%20${encodeURIComponent(
-    form.name || "Client"
-  )}.%20Contact:%20${encodeURIComponent(form.contact || "")}.%20Message:%20${encodeURIComponent(
-    form.msg || "I am interested in Varahi Anugrahams villas."
+    form.name.trim() || "Client"
+  )}.%20Contact:%20${encodeURIComponent(form.contact.trim() || "")}.%20Message:%20${encodeURIComponent(
+    form.msg.trim() || "I am interested in Varahi Anugrahams villas."
   )}`;
 
   return (
@@ -546,23 +554,44 @@ export const ReferenceStyleBottomSections: React.FC = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-4">
-                    <h4 className="font-serif text-2xl font-medium text-white">
-                      Thank you, {form.name}.
-                    </h4>
+                  <div className="p-6 sm:p-8 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-5 animate-in fade-in duration-300">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+                        <MessageCircle className="w-5 h-5 animate-pulse" />
+                      </div>
+                      <div>
+                        <h4 className="font-serif text-xl sm:text-2xl font-medium text-white">
+                          Thank you, {form.name}.
+                        </h4>
+                        <p className="text-xs sm:text-sm text-emerald-400/90 font-mono tracking-wide mt-0.5">
+                          Opening WhatsApp...
+                        </p>
+                      </div>
+                    </div>
+
                     <p className="text-sm text-stone-300 leading-relaxed">
-                      Your inquiry has been formatted. Connect directly with Promoter{" "}
-                      <strong className="text-white">Rangaiah Kotra</strong> on WhatsApp:
+                      If WhatsApp didn&apos;t open automatically, tap below to chat directly with Promoter{" "}
+                      <strong className="text-white">Rangaiah Kotra</strong> or connect via direct phone call:
                     </p>
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs font-mono tracking-wider uppercase transition-all"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      <span>Send via WhatsApp (+91 9492854666)</span>
-                    </a>
+
+                    <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs font-mono tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] group cursor-pointer"
+                      >
+                        <MessageCircle className="w-4 h-4 text-white" />
+                        <span>Send on WhatsApp (+91 9492854666)</span>
+                      </a>
+                      <a
+                        href="tel:+919492854666"
+                        className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-gold hover:bg-[#e5c158] text-stone-950 font-semibold text-xs font-mono tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(212,175,55,0.25)] cursor-pointer"
+                      >
+                        <Phone className="w-4 h-4 text-stone-950" />
+                        <span>Call Promoter Now</span>
+                      </a>
+                    </div>
                   </div>
                 )}
               </SpotlightCard>
